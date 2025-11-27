@@ -81,7 +81,7 @@ function ActionButtons() {
                 </Button>
             </Link>
 
-            <Link href="/login" className="hidden md:block">
+            <Link href="/profile" className="hidden md:block">
                 <Avatar className="h-8 w-8 bg-orange-100">
                     <AvatarImage src="/avatars/01.png" alt="@urbanfox" />
                     <AvatarFallback className="bg-orange-200 text-orange-900">UF</AvatarFallback>
