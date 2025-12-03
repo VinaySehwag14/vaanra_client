@@ -1,30 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { User as FirebaseUser } from "firebase/auth";
 import { User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 interface PersonalInfoSectionProps {
-    initialData?: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        phone: string;
-    };
+    user: FirebaseUser | null;
+    loading: boolean;
 }
 
 export default function PersonalInfoSection({
-    initialData = {
-        firstName: "Alex",
-        lastName: "Johnson",
-        email: "alex.johnson@example.com",
-        phone: "+1 (555) 123-4567",
-    },
+    user,
+    loading,
 }: PersonalInfoSectionProps) {
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState(initialData);
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+    });
+
+    // Update form data when user changes
+    useEffect(() => {
+        if (user) {
+            const displayName = user.displayName || "";
+            const nameParts = displayName.split(" ");
+            setFormData({
+                firstName: nameParts[0] || "",
+                lastName: nameParts.slice(1).join(" ") || "",
+                email: user.email || "",
+                phone: user.phoneNumber || "",
+            });
+        }
+    }, [user]);
 
     const handleSave = () => {
         // In a real app, this would save to backend
@@ -33,9 +45,39 @@ export default function PersonalInfoSection({
     };
 
     const handleCancel = () => {
-        setFormData(initialData);
+        // Reset to current user data
+        if (user) {
+            const displayName = user.displayName || "";
+            const nameParts = displayName.split(" ");
+            setFormData({
+                firstName: nameParts[0] || "",
+                lastName: nameParts.slice(1).join(" ") || "",
+                email: user.email || "",
+                phone: user.phoneNumber || "",
+            });
+        }
         setIsEditing(false);
     };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 md:p-8">
+                <div className="mb-6 flex items-center gap-3">
+                    <div className="h-10 w-10 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                    <div className="h-6 w-40 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+                </div>
+                <div className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="h-20 animate-pulse rounded bg-zinc-100 dark:bg-zinc-800" />
+                        <div className="h-20 animate-pulse rounded bg-zinc-100 dark:bg-zinc-800" />
+                    </div>
+                    <div className="h-20 animate-pulse rounded bg-zinc-100 dark:bg-zinc-800" />
+                    <div className="h-20 animate-pulse rounded bg-zinc-100 dark:bg-zinc-800" />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 md:p-8">

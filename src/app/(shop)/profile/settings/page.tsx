@@ -1,8 +1,12 @@
+"use client";
+
+import { useAuth } from "@/hooks/useAuth";
 import ProfileSidebar from "@/components/profile/profile-sidebar";
 import PersonalInfoSection from "@/components/settings/personal-info-section";
 import SecuritySection from "@/components/settings/security-section";
 
 export default function SettingsPage() {
+    const { user, loading } = useAuth();
     return (
         <div className="min-h-screen bg-zinc-50 pb-20 dark:bg-zinc-950">
             <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
@@ -23,7 +27,7 @@ export default function SettingsPage() {
                         </div>
 
                         {/* Personal Information Section */}
-                        <PersonalInfoSection />
+                        <PersonalInfoSection user={user} loading={loading} />
 
                         {/* Security Section */}
                         <SecuritySection />
