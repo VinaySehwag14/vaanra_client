@@ -12,9 +12,17 @@ import { useRouter } from "next/navigation"
 import { OtpLogin } from "@/components/auth/otp-login"
 import { Chrome } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
+import { signUpWithEmail, updateUserProfile } from "@/lib/authClient"
+import { ApiClient } from "@/lib/api-client"
+import { AlertCircle, Loader2 } from "lucide-react"
 
 export default function RegisterPage() {
     const [mode, setMode] = useState<"email" | "phone">("email")
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [registerLoading, setRegisterLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const router = useRouter()
     const { user, loading } = useAuth()
 
@@ -32,6 +40,50 @@ export default function RegisterPage() {
             router.push("/profile")
         } catch (error) {
             console.error("Error signing in with Google", error)
+        }
+    }
+
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setError(null)
+        setRegisterLoading(true)
+
+        try {
+            // 1. Create user in Firebase
+            const userCredential = await signUpWithEmail(email, password)
+            const user = userCredential.user
+
+            // 2. Update Firebase profile
+            await updateUserProfile(user, { displayName: name })
+
+            // 3. Register user in backend
+            // Note: We need to reload the user to ensure the displayName is updated in the auth token if needed,
+            // but for now we'll just pass the user object which has the updated display name locally if we use the object returned by updateProfile?
+            // Actually updateProfile returns void. We can manually set the displayName on the user object before sending it to backend if needed,
+            // or rely on the backend to take the name from the request body if we were sending it separately.
+            // But our ApiClient.registerUser takes the user object and extracts displayName.
+            // Let's manually update the user object's displayName property for the API call since updateProfile doesn't update the local object immediately in all contexts?
+            // Actually, let's just assume the user object is what we have.
+            // To be safe, let's explicitly pass the name if the API supported it, but our API client extracts from user object.
+            // Let's force update the property on the user object we have.
+            // @ts-ignore
+            user.displayName = name
+
+            await ApiClient.registerUser(user)
+
+            // 4. Redirect
+            router.push("/profile")
+        } catch (err: any) {
+            console.error("Registration error:", err)
+            if (err.code === "auth/email-already-in-use") {
+                setError("Email is already in use. Please sign in instead.")
+            } else if (err.code === "auth/weak-password") {
+                setError("Password is too weak. Please use a stronger password.")
+            } else {
+                setError(err.message || "Failed to register. Please try again.")
+            }
+        } finally {
+            setRegisterLoading(false)
         }
     }
 
@@ -65,21 +117,53 @@ export default function RegisterPage() {
                 </CardHeader>
                 <CardContent className="grid gap-4">
                     {mode === "email" ? (
-                        <>
+                        <form onSubmit={handleRegister} className="grid gap-4">
+                            {error && (
+                                <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md flex items-center gap-2">
+                                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                    <span>{error}</span>
+                                </div>
+                            )}
                             <div className="grid gap-2">
                                 <Label htmlFor="name">Name</Label>
-                                <Input id="name" type="text" placeholder="John Doe" required />
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    placeholder="John Doe"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                    disabled={registerLoading}
+                                />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" placeholder="m@example.com" required />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="m@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    disabled={registerLoading}
+                                />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" required />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    disabled={registerLoading}
+                                />
                             </div>
-                            <Button className="w-full">Create account</Button>
-                        </>
+                            <Button className="w-full" type="submit" disabled={registerLoading}>
+                                {registerLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Create account
+                            </Button>
+                        </form>
                     ) : (
                         <OtpLogin />
                     )}

@@ -7,6 +7,7 @@ import {
   User,
   GoogleAuthProvider,
   signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "./firebaseClient";
 
@@ -56,4 +57,14 @@ export function subscribeToAuthChanges(
   callback: (user: User | null) => void
 ) {
   return onAuthStateChanged(auth, callback);
+}
+
+/**
+ * Update user profile
+ * @param user User object
+ * @param profile Profile data to update
+ * @returns Promise<void>
+ */
+export function updateUserProfile(user: User, profile: { displayName?: string; photoURL?: string }) {
+  return updateProfile(user, profile);
 }

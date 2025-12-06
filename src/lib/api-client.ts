@@ -91,5 +91,36 @@ export class ApiClient {
         }
     }
 
+    /**
+     * Register a new user in the backend
+     * @param user Firebase user object
+     * @returns Promise<any> - User data from backend
+     */
+    static async registerUser(user: User) {
+        try {
+            const headers = await this.getAuthHeaders(user);
+            const response = await fetch(`${API_URL}/api/v1/auth/register`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    uid: user.uid,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to register user: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error registering user with backend:", error);
+            throw error;
+        }
+    }
+
     // Add more API methods here as needed
 }

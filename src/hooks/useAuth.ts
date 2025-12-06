@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
 import { subscribeToAuthChanges, logOut } from "../lib/authClient";
 import { ApiClient } from "../lib/api-client";
+import { useRouter } from "next/navigation";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const unsub = subscribeToAuthChanges(async (u) => {
@@ -27,6 +29,7 @@ export function useAuth() {
             setError("Your account is not registered in our system.");
             await logOut();
             setUser(null);
+            router.push("/register");
           } else {
             setError("Failed to verify your account.");
             setUser(u); // Keep user logged in for other errors
@@ -39,7 +42,7 @@ export function useAuth() {
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [router]);
 
   return { user, loading, error };
 }
