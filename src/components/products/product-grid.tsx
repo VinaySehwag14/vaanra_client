@@ -1,6 +1,7 @@
 "use client";
 
-import ProductCard, { Product } from "./product-card";
+import ProductCard from "./product-card";
+import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 
 interface ProductGridProps {

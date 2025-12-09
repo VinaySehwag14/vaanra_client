@@ -1,51 +1,6 @@
 import CategoryHero from "@/components/products/category-hero";
 import ProductFilters from "@/components/products/product-filters";
-import ProductGrid from "@/components/products/product-grid";
-import { Product } from "@/components/products/product-card";
-
-// Mock Data
-const products: Product[] = [
-    {
-        id: 1,
-        title: "Astro-Graphic Hoodie",
-        price: 89.99,
-        image: "/gallery/wear-waves-2.jpg",
-        badge: { text: "New", color: "new" },
-    },
-    {
-        id: 2,
-        title: "Midnight Essential Hoodie",
-        price: 75.00,
-        image: "/looks/urban-explorer.jpg",
-    },
-    {
-        id: 3,
-        title: "Urban Sand Hoodie",
-        price: 80.00,
-        image: "/gallery/wear-waves-1.jpg",
-    },
-    {
-        id: 4,
-        title: "Heather Grey Classic",
-        price: 64.99,
-        originalPrice: 79.99,
-        image: "/carousel/summer-edit.jpg",
-        badge: { text: "20% OFF", color: "sale" },
-    },
-    {
-        id: 5,
-        title: "Aqua-Wave Tech Hoodie",
-        price: 95.00,
-        image: "/looks/coastal-vibe.jpg",
-    },
-    {
-        id: 6,
-        title: "Sunset Orange Pullover",
-        price: 82.50,
-        image: "/carousel/winter-collection.jpg",
-        badge: { text: "Hot", color: "hot" },
-    },
-];
+import ProductsContainer from "@/components/products/products-container";
 
 const categoryInfo: Record<string, { title: string; description: string; image: string }> = {
     "t-shirts": {
@@ -74,7 +29,7 @@ const categoryInfo: Record<string, { title: string; description: string; image: 
         image: "/gallery/wear-waves-1.jpg",
     },
     all: {
-        title: "Collection",
+        title: "All Products",
         description: "Explore our full range of urban streetwear. Designed for those who move with the city.",
         image: "/carousel/summer-edit.jpg",
     },
@@ -116,8 +71,8 @@ export default async function ProductsPage({
                         </div>
                     </aside>
 
-                    {/* Product Grid */}
-                    <ProductGrid products={products} />
+                    {/* Product Grid - Now fetches from API */}
+                    <ProductsContainer />
                 </div>
             </div>
         </div>

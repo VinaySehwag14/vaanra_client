@@ -3,18 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
-
-export interface Product {
-    id: number;
-    title: string;
-    price: number;
-    originalPrice?: number;
-    image: string;
-    badge?: {
-        text: string;
-        color: "new" | "sale" | "hot";
-    };
-}
+import { Product } from "@/types/product";
 
 interface ProductCardProps {
     product: Product;
@@ -22,7 +11,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     return (
-        <Link href={`/products/${product.id}`} className="group block">
+        <Link href={`/products/${product.slug}`} className="group block">
             <div className="relative mb-4 aspect-[3/4] overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
                 {/* Product Image */}
                 <Image

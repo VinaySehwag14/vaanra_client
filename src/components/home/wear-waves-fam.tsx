@@ -59,7 +59,7 @@ export default function WearWavesFam() {
                     <Link
                         key={item.id}
                         href={item.link}
-                        className="group relative aspect-[3/4] w-[60%] shrink-0 snap-center overflow-hidden rounded-2xl bg-zinc-100 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02] dark:bg-zinc-800 sm:w-[45%] md:w-auto"
+                        className="group relative aspect-[3/4] w-[60%] shrink-0 snap-center overflow-hidden rounded-2xl bg-zinc-100 shadow-md transition-all duration-300 hover:shadow-xl dark:bg-zinc-800 sm:w-[45%] md:w-auto"
                     >
                         <Image
                             src={item.image}
