@@ -7,7 +7,7 @@ import { mapApiProductToProduct, Product, ApiProduct } from "@/types/product";
 
 interface RelatedProductsProps {
     categoryName?: string;
-    currentProductId?: string;
+    currentProductId?: string | number;
 }
 
 export default function RelatedProducts({ categoryName, currentProductId }: RelatedProductsProps) {
@@ -28,7 +28,7 @@ export default function RelatedProducts({ categoryName, currentProductId }: Rela
 
                 // Filter out the current product, then map to UI format
                 const mappedProducts = response.products
-                    .filter((apiProduct: ApiProduct) => apiProduct.id !== currentProductId)
+                    .filter((apiProduct: ApiProduct) => String(apiProduct.id) !== String(currentProductId))
                     .slice(0, 4) // Limit to 4 products
                     .map(mapApiProductToProduct);
 

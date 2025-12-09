@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Ruler } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Star, Ruler, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProductVariant } from "@/types/product";
+import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProductInfoProps {
     title: string;
@@ -15,6 +18,7 @@ interface ProductInfoProps {
     description: string;
     stock?: number;
     variants?: ProductVariant[];
+    productId?: string | number;
 }
 
 export default function ProductInfo({
@@ -26,7 +30,16 @@ export default function ProductInfo({
     description,
     stock,
     variants = [],
+    productId,
 }: ProductInfoProps) {
+    const router = useRouter();
+    const { user } = useAuth();
+    const { addToCart, isLoading: cartLoading } = useCart();
+
+    // Local loading states
+    const [addingToCart, setAddingToCart] = useState(false);
+    const [buyingNow, setBuyingNow] = useState(false);
+
     // Extract unique colors and sizes from variants
     const variantColors = Array.from(
         new Set(variants.filter(v => v.color).map(v => v.color).filter((c): c is string => !!c))
@@ -50,7 +63,71 @@ export default function ProductInfo({
     const selectedVariant = variants.length > 0 ? variants.find(
         v => v.color === selectedColor && v.size === selectedSize
     ) : undefined;
-    const variantStock = selectedVariant?.stock ?? stock ?? 0;
+    // Use stock_quantity (new API) or stock (legacy) or fallback to component stock prop
+    const variantStock = selectedVariant?.stock_quantity ?? selectedVariant?.stock ?? stock ?? 0;
+
+    // Handle Add to Cart
+    const handleAddToCart = async () => {
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+
+        if (!selectedVariant?.id) {
+            alert("Please select a valid variant");
+            return;
+        }
+
+        setAddingToCart(true);
+        try {
+            const variantId = typeof selectedVariant.id === "string"
+                ? parseInt(selectedVariant.id, 10)
+                : selectedVariant.id;
+
+            const success = await addToCart(variantId, quantity);
+            if (success) {
+                // Show success feedback (could use toast here)
+                alert("Added to cart!");
+            }
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            alert("Failed to add to cart. Please try again.");
+        } finally {
+            setAddingToCart(false);
+        }
+    };
+
+    // Handle Buy Now
+    const handleBuyNow = async () => {
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+
+        if (!selectedVariant?.id) {
+            alert("Please select a valid variant");
+            return;
+        }
+
+        setBuyingNow(true);
+        try {
+            const variantId = typeof selectedVariant.id === "string"
+                ? parseInt(selectedVariant.id, 10)
+                : selectedVariant.id;
+
+            const success = await addToCart(variantId, quantity);
+            if (success) {
+                router.push("/checkout");
+            }
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            alert("Failed to add to cart. Please try again.");
+        } finally {
+            setBuyingNow(false);
+        }
+    };
+
+    const isButtonDisabled = variantStock === 0 || addingToCart || buyingNow || cartLoading;
 
     return (
         <div className="flex flex-col gap-8">
@@ -62,102 +139,142 @@ export default function ProductInfo({
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                            ${price.toFixed(2)}
+                            ₹{price.toFixed(2)}
                         </span>
                         {originalPrice && (
                             <span className="text-lg text-zinc-500 line-through dark:text-zinc-400">
-                                ${originalPrice.toFixed(2)}
+                                ₹{originalPrice.toFixed(2)}
                             </span>
                         )}
                     </div>
-                    <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                            <Star
-                                key={i}
-                                className={cn(
-                                    "h-4 w-4",
-                                    i < Math.floor(rating)
-                                        ? "fill-primary text-primary"
-                                        : "fill-zinc-200 text-zinc-200 dark:fill-zinc-800 dark:text-zinc-800"
-                                )}
-                            />
-                        ))}
-                        <span className="ml-2 text-sm text-zinc-500 dark:text-zinc-400">
-                            ({reviews} reviews)
-                        </span>
+                    <div className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400">
+                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        <span className="font-medium">{rating}</span>
+                        <span>({reviews} reviews)</span>
                     </div>
                 </div>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                    {variantStock > 0 ? `${variantStock} in stock` : "Out of stock"}
-                </p>
             </div>
 
             {/* Color Selection */}
-            {availableColors.length > 0 && (
-                <div className="space-y-3">
-                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                        Color: <span className="text-zinc-500 dark:text-zinc-400">{selectedColor}</span>
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <span className="font-bold text-zinc-900 dark:text-zinc-50">
+                        Color: {selectedColor}
                     </span>
-                    <div className="flex gap-3">
-                        {availableColors.map((color) => (
+                </div>
+                <div className="flex gap-2">
+                    {availableColors.map((color) => {
+                        // Check if this color has available stock (when used with selected size)
+                        const colorVariant = variants.find(
+                            v => v.color === color && v.size === selectedSize
+                        );
+                        const isAvailable = !colorVariant || (colorVariant.stock_quantity ?? colorVariant.stock ?? 0) > 0;
+
+                        return (
                             <button
                                 key={color}
                                 onClick={() => setSelectedColor(color)}
+                                disabled={!isAvailable}
                                 className={cn(
-                                    "h-8 w-8 rounded-full ring-2 ring-transparent ring-offset-2 transition-all hover:scale-110 dark:ring-offset-zinc-950",
-                                    getColorClass(color),
-                                    selectedColor === color && "ring-primary"
+                                    "h-10 min-w-10 rounded-full border-2 px-3 text-xs font-medium transition-all",
+                                    selectedColor === color
+                                        ? "border-primary bg-primary/10"
+                                        : "border-zinc-200 dark:border-zinc-700",
+                                    !isAvailable && "opacity-50 cursor-not-allowed line-through"
                                 )}
-                                aria-label={`Select ${color}`}
-                            />
-                        ))}
-                    </div>
+                            >
+                                {color}
+                            </button>
+                        );
+                    })}
                 </div>
-            )}
+            </div>
 
             {/* Size Selection */}
-            {availableSizes.length > 0 && (
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">Size</span>
-                        <button className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80">
-                            <Ruler className="h-3 w-3" />
-                            Size Guide
-                        </button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {availableSizes.map((size) => (
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <span className="font-bold text-zinc-900 dark:text-zinc-50">
+                        Size: {selectedSize}
+                    </span>
+                    <button className="flex items-center gap-1 text-sm text-primary hover:underline">
+                        <Ruler className="h-4 w-4" />
+                        Size Guide
+                    </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    {availableSizes.map((size) => {
+                        // Check if this size has available stock (when used with selected color)
+                        const sizeVariant = variants.find(
+                            v => v.size === size && v.color === selectedColor
+                        );
+                        const isAvailable = !sizeVariant || (sizeVariant.stock_quantity ?? sizeVariant.stock ?? 0) > 0;
+
+                        return (
                             <button
                                 key={size}
                                 onClick={() => setSelectedSize(size)}
+                                disabled={!isAvailable}
                                 className={cn(
-                                    "flex h-10 w-12 items-center justify-center rounded-md border text-sm font-medium transition-all",
+                                    "flex h-11 min-w-11 items-center justify-center rounded-lg border-2 text-sm font-bold transition-all",
                                     selectedSize === size
-                                        ? "border-primary bg-primary/10 text-primary dark:text-primary"
-                                        : "border-zinc-200 bg-transparent text-zinc-600 hover:border-primary hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-50 dark:hover:text-zinc-50"
+                                        ? "border-primary bg-primary/10 text-primary"
+                                        : "border-zinc-200 text-zinc-900 dark:border-zinc-700 dark:text-zinc-50",
+                                    !isAvailable && "opacity-50 cursor-not-allowed line-through"
                                 )}
                             >
                                 {size}
                             </button>
-                        ))}
-                    </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Stock Status */}
+            {variants.length > 0 && (
+                <div className="text-sm">
+                    {variantStock > 0 ? (
+                        <span className={cn(
+                            "font-medium",
+                            variantStock <= 5 ? "text-amber-600" : "text-green-600"
+                        )}>
+                            {variantStock <= 5 ? `Only ${variantStock} left!` : `${variantStock} in stock`}
+                        </span>
+                    ) : (
+                        <span className="font-medium text-red-600">Out of stock</span>
+                    )}
                 </div>
             )}
 
             {/* Actions - Buttons Side by Side */}
             <div className="flex flex-row gap-3">
                 <Button
+                    onClick={handleAddToCart}
                     className="h-12 flex-1 rounded-full bg-primary text-base font-bold text-black hover:bg-primary/90"
-                    disabled={variantStock === 0}
+                    disabled={isButtonDisabled}
                 >
-                    Add to Cart
+                    {addingToCart ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Adding...
+                        </>
+                    ) : (
+                        "Add to Cart"
+                    )}
                 </Button>
                 <Button
+                    onClick={handleBuyNow}
                     variant="outline"
                     className="h-12 flex-1 rounded-full border-zinc-900 text-base font-bold text-zinc-900 hover:bg-zinc-50 dark:border-zinc-50 dark:text-zinc-50 dark:hover:bg-zinc-900"
-                    disabled={variantStock === 0}
+                    disabled={isButtonDisabled}
                 >
-                    Buy Now
+                    {buyingNow ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing...
+                        </>
+                    ) : (
+                        "Buy Now"
+                    )}
                 </Button>
             </div>
 
@@ -176,28 +293,4 @@ export default function ProductInfo({
             </div>
         </div>
     );
-}
-
-// Helper function to get color class based on color name
-function getColorClass(color: string): string {
-    const colorLower = color.toLowerCase();
-
-    const colorMap: Record<string, string> = {
-        black: "bg-black",
-        white: "bg-white border border-zinc-200",
-        navy: "bg-blue-900",
-        blue: "bg-blue-500",
-        red: "bg-red-500",
-        green: "bg-green-500",
-        yellow: "bg-yellow-400",
-        pink: "bg-pink-500",
-        purple: "bg-purple-500",
-        gray: "bg-gray-500",
-        grey: "bg-gray-500",
-        orange: "bg-orange-500",
-        brown: "bg-amber-700",
-        beige: "bg-amber-200",
-    };
-
-    return colorMap[colorLower] || "bg-zinc-500";
 }

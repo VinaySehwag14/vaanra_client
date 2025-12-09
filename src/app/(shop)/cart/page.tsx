@@ -1,61 +1,57 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Loader2 } from "lucide-react";
 import CartItemCard from "@/components/cart/cart-item-card";
 import OrderSummary from "@/components/cart/order-summary";
 import CompleteYourLook from "@/components/cart/complete-your-look";
-import { CartItem } from "@/types/cart";
 import { Button } from "@/components/ui/button";
-
-// Mock cart data
-const initialCartItems: CartItem[] = [
-    {
-        id: "1",
-        name: "Acid Wash Hoodie",
-        size: "Large",
-        color: "Ocean Blue",
-        price: 65.00,
-        quantity: 1,
-        image: "/gallery/wear-waves-2.jpg",
-    },
-    {
-        id: "2",
-        name: "Gradient Tee",
-        size: "Medium",
-        color: "Sunset",
-        price: 35.00,
-        quantity: 1,
-        image: "/carousel/summer-edit.jpg",
-    },
-];
+import { useCart } from "@/context/cart-context";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
-    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+    const router = useRouter();
+    const { cartItems, cartSummary, isLoading, updateQuantity, removeItem } = useCart();
 
-    const handleUpdateQuantity = (id: string, quantity: number) => {
-        setCartItems((items) =>
-            items.map((item) =>
-                item.id === id ? { ...item, quantity } : item
-            )
-        );
+    const handleUpdateQuantity = async (cartItemId: string, quantity: number) => {
+        await updateQuantity(Number(cartItemId), quantity);
     };
 
-    const handleRemoveItem = (id: string) => {
-        setCartItems((items) => items.filter((item) => item.id !== id));
+    const handleRemoveItem = async (cartItemId: string) => {
+        await removeItem(Number(cartItemId));
     };
 
     const handleCheckout = () => {
-        console.log("Proceeding to checkout");
-        // Navigate to checkout page
+        router.push("/checkout");
     };
 
-    const subtotal = cartItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-    );
-    const shipping = 5.00;
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+                <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
+                    <div className="flex items-center justify-center py-20">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <span className="ml-2 text-zinc-600 dark:text-zinc-400">Loading cart...</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Map API cart items to UI format
+    const uiCartItems = cartItems.map((item) => ({
+        id: String(item.cart_item_id),
+        name: item.product_name,
+        size: item.size,
+        color: item.color,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.product_image || "/placeholder-product.jpg",
+    }));
+
+    // Use totals from API summary
+    const subtotal = cartSummary?.subtotal || uiCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shipping = subtotal > 999 ? 0 : 99;
 
     return (
         <div className="min-h-screen bg-zinc-50 pb-20 dark:bg-zinc-950">
@@ -66,15 +62,15 @@ export default function CartPage() {
                         Your Wave Cart
                     </h1>
                     <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                        {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart
+                        {uiCartItems.length} {uiCartItems.length === 1 ? "item" : "items"} in your cart
                     </p>
                 </div>
 
-                {cartItems.length > 0 ? (
+                {uiCartItems.length > 0 ? (
                     <div className="grid gap-8 lg:grid-cols-3">
                         {/* Cart Items */}
                         <div className="space-y-4 lg:col-span-2">
-                            {cartItems.map((item) => (
+                            {uiCartItems.map((item) => (
                                 <CartItemCard
                                     key={item.id}
                                     item={item}
@@ -109,7 +105,7 @@ export default function CartPage() {
                 )}
 
                 {/* Complete Your Look */}
-                {cartItems.length > 0 && (
+                {uiCartItems.length > 0 && (
                     <div className="mt-12">
                         <CompleteYourLook />
                     </div>

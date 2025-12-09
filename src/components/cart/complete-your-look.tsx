@@ -77,7 +77,7 @@ export default function CompleteYourLook() {
                             </p>
                             <div className="mt-3 flex items-center justify-between">
                                 <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                                    ${product.price.toFixed(2)}
+                                    ₹{product.price.toFixed(2)}
                                 </span>
                                 <Button
                                     size="icon"

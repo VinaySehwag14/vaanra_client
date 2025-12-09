@@ -66,7 +66,7 @@ export default function SavedItemCard({
 
                 <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                        ${item.price.toFixed(2)}
+                        ₹{item.price.toFixed(2)}
                     </span>
 
                     <button

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
+import { useCart } from "@/context/cart-context"
 
 const navLinks = [
     { href: "/products?category=t-shirts", label: "T-Shirts" },
@@ -62,6 +63,7 @@ function DesktopNav() {
 
 function ActionButtons() {
     const { user } = useAuth();
+    const { cartCount } = useCart();
     const [mounted, setMounted] = useState(false);
 
     // Prevent hydration mismatch by only rendering user-dependent UI after mount
@@ -92,9 +94,11 @@ function ActionButtons() {
             <Link href="/cart">
                 <Button variant="ghost" size="icon" className="relative">
                     <ShoppingBag className="h-5 w-5" />
-                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-black">
-                        3
-                    </span>
+                    {cartCount > 0 && (
+                        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-black">
+                            {cartCount > 99 ? "99+" : cartCount}
+                        </span>
+                    )}
                     <span className="sr-only">Cart</span>
                 </Button>
             </Link>
@@ -148,6 +152,7 @@ function MobileNav() {
 
 function MobileBottomNav() {
     const { user } = useAuth();
+    const { cartCount } = useCart();
     const [mounted, setMounted] = useState(false);
 
     // Prevent hydration mismatch by only rendering user-dependent UI after mount
@@ -184,9 +189,11 @@ function MobileBottomNav() {
 
                     <Link href="/cart" className="flex flex-col items-center gap-1 px-3 py-2 text-muted-foreground hover:text-foreground transition-colors group relative">
                         <ShoppingBag className="h-5 w-5 group-hover:text-primary transition-colors" />
-                        <span className="absolute -top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-black">
-                            3
-                        </span>
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-black">
+                                {cartCount > 99 ? "99+" : cartCount}
+                            </span>
+                        )}
                         <span className="text-xs font-medium">Cart</span>
                     </Link>
 

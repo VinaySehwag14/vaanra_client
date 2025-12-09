@@ -68,10 +68,24 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         );
     }
 
-    // Get all image URLs sorted by sort_order
+    // Get all image URLs - handle both new format (image_url, is_primary) and legacy format (url, sort_order)
     const images = product.images
-        .sort((a, b) => a.sort_order - b.sort_order)
-        .map(img => img.url);
+        .sort((a, b) => {
+            // Use is_primary first, then sort_order
+            if (a.is_primary) return -1;
+            if (b.is_primary) return 1;
+            return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+        })
+        .map(img => img.image_url || img.url || '')
+        .filter(url => url !== '');
+
+    // Calculate current price and original price for display
+    const currentPrice = product.selling_price ?? product.sale_price ?? product.price ?? 0;
+    const originalMrp = product.mrp ?? product.price;
+    const showOriginalPrice = product.is_on_sale && originalMrp && currentPrice < originalMrp;
+
+    // Get category name from categories array or legacy field
+    const categoryName = product.categories?.[0]?.name || product.category_name || "Products";
 
     return (
         <div className="min-h-screen bg-zinc-50 pb-20 dark:bg-zinc-950">
@@ -80,7 +94,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                 <div className="mb-6 text-sm text-zinc-500 dark:text-zinc-400">
                     <span>Home</span>
                     <span className="mx-2">/</span>
-                    <span>{product.category_name || "Products"}</span>
+                    <span>{categoryName}</span>
                     <span className="mx-2">/</span>
                     <span className="font-medium text-zinc-900 dark:text-zinc-50">
                         {product.name}
@@ -92,11 +106,11 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                     <ProductGallery images={images} />
                     <ProductInfo
                         title={product.name}
-                        price={product.sale_price || product.price}
-                        originalPrice={product.is_on_sale ? product.price : undefined}
+                        price={currentPrice}
+                        originalPrice={showOriginalPrice ? originalMrp : undefined}
                         rating={4.5}
                         reviews={128}
-                        description={product.description}
+                        description={product.description || ''}
                         stock={product.stock}
                         variants={product.variants}
                     />
@@ -109,7 +123,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
 
                 {/* Related Products */}
                 <RelatedProducts
-                    categoryName={product.category_name}
+                    categoryName={categoryName}
                     currentProductId={product.id}
                 />
             </div>

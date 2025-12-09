@@ -1,5 +1,5 @@
 // Order types and interfaces
-export type OrderStatus = "delivered" | "processing" | "shipped" | "cancelled";
+export type OrderStatus = "pending" | "delivered" | "processing" | "shipped" | "cancelled";
 
 export interface Order {
     id: string;
@@ -22,6 +22,11 @@ export const ORDER_STATUS_CONFIG: Record<
     OrderStatus,
     { label: string; color: string; bgColor: string }
 > = {
+    pending: {
+        label: "Pending",
+        color: "text-orange-600 dark:text-orange-400",
+        bgColor: "bg-orange-100 dark:bg-orange-950/20",
+    },
     delivered: {
         label: "Delivered",
         color: "text-green-600 dark:text-green-400",
@@ -43,3 +48,76 @@ export const ORDER_STATUS_CONFIG: Record<
         bgColor: "bg-red-100 dark:bg-red-950/20",
     },
 };
+
+/**
+ * Order item for API
+ */
+export interface ApiOrderItem {
+    product_name: string;
+    quantity: number;
+    price: number;
+}
+
+/**
+ * Order from API response
+ */
+export interface ApiOrder {
+    id: number;
+    total_amount: number;
+    discount_amount: number;
+    final_amount: number;
+    status: OrderStatus;
+    items: ApiOrderItem[];
+    created_at?: string;
+}
+
+/**
+ * Shipping address for order
+ */
+export interface ShippingAddress {
+    full_name: string;
+    name?: string; // Legacy field
+    email?: string;
+    street: string;
+    city: string;
+    state: string;
+    pincode: string;
+    phone: string;
+    landmark?: string;
+}
+
+/**
+ * Order item request
+ */
+export interface OrderItemRequest {
+    variant_id: number;
+    quantity: number;
+}
+
+/**
+ * Request body for creating an order
+ */
+export interface CreateOrderRequest {
+    items: OrderItemRequest[];
+    shipping_address: ShippingAddress;
+    payment_method: "cod" | "online";
+    coupon_code?: string;
+}
+
+/**
+ * Response from creating an order
+ */
+export interface CreateOrderResponse {
+    success: boolean;
+    message: string;
+    order_id: number;
+}
+
+/**
+ * Response from getting user orders
+ */
+export interface OrdersResponse {
+    success: boolean;
+    orders: ApiOrder[];
+}
+
