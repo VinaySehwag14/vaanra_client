@@ -40,7 +40,7 @@ export default function OrderSummary({
                 <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span>Subtotal</span>
                     <span className="font-medium text-zinc-900 dark:text-zinc-50">
-                        ${subtotal.toFixed(2)}
+                        ₹{subtotal.toFixed(2)}
                     </span>
                 </div>
 
@@ -48,7 +48,7 @@ export default function OrderSummary({
                 <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span>Shipping</span>
                     <span className="font-medium text-zinc-900 dark:text-zinc-50">
-                        ${shipping.toFixed(2)}
+                        ₹{shipping.toFixed(2)}
                     </span>
                 </div>
 
@@ -56,7 +56,7 @@ export default function OrderSummary({
                 {discount > 0 && (
                     <div className="flex justify-between text-green-600 dark:text-green-400">
                         <span>Discount</span>
-                        <span className="font-medium">-${discount.toFixed(2)}</span>
+                        <span className="font-medium">-₹{discount.toFixed(2)}</span>
                     </div>
                 )}
 
@@ -66,7 +66,7 @@ export default function OrderSummary({
                 {/* Total */}
                 <div className="flex justify-between text-lg font-bold text-zinc-900 dark:text-zinc-50">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₹{total.toFixed(2)}</span>
                 </div>
 
                 {/* Coupon Code */}

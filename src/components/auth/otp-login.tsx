@@ -44,7 +44,7 @@ export function OtpLogin() {
             if (err.code === 'auth/operation-not-allowed') {
                 setError("Phone authentication is not enabled in Firebase Console. Please enable it.")
             } else if (err.code === 'auth/invalid-app-credential') {
-                setError("Invalid app credential. Please check if 'localhost' is whitelisted in Firebase Console -> Authentication -> Settings -> Authorized Domains.")
+                setError("Invalid app credential. Please check if domain is whitelisted in Firebase Console -> Authentication -> Settings -> Authorized Domains.")
             } else if (err.code === 'auth/too-many-requests') {
                 setError("Too many requests. Please wait a while before trying again, or use a test phone number registered in Firebase Console.")
             } else {

@@ -66,7 +66,7 @@ export default function CartItemCard({
 
                     <div className="flex items-center gap-4">
                         <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ₹{(item.price * item.quantity).toFixed(2)}
                         </span>
                         <Button
                             variant="ghost"

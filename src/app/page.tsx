@@ -1,6 +1,6 @@
 import HeroCarousel from "@/components/home/hero-carousel";
 import ShopTheLook from "@/components/home/shop-the-look";
-import WearWavesFam from "@/components/home/wear-waves-fam";
+import UrbanFoxFam from "@/components/home/wear-waves-fam";
 import FeaturedProduct from "@/components/home/featured-product";
 import TrendingCollections from "@/components/home/trending-collections";
 import ShopByCategory from "@/components/home/shop-by-category";
@@ -35,9 +35,9 @@ export default function Home() {
         <ShopTheLook />
       </section>
 
-      {/* WearWaves Fam Gallery Section */}
+      {/* UrbanFox Fam Gallery Section */}
       <section className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <WearWavesFam />
+        <UrbanFoxFam />
       </section>
 
       {/* Featured Product Section */}

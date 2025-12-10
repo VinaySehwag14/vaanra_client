@@ -37,13 +37,13 @@ const galleryImages: GalleryImage[] = [
     },
 ];
 
-export default function WearWavesFam() {
+export default function UrbanFoxFam() {
     return (
         <section className="w-full">
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-3xl lg:text-4xl">
-                    #WearWaves Fam
+                    #UrbanFox Fam
                 </h2>
                 <Link
                     href="/gallery"

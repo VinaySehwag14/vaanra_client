@@ -28,7 +28,7 @@ const faqs = [
         category: "Shipping",
         question: "What are the shipping options?",
         answer:
-            "We offer several shipping options: Standard Shipping (5-7 business days) for $5, Express Shipping (2-3 business days) for $15, and Next Day Delivery for $25. Free standard shipping is available on orders over $75. International shipping is available to select countries.",
+            "We offer several shipping options: Standard Shipping (5-7 business days) for ₹99, Express Shipping (2-3 business days) for ₹199, and Next Day Delivery for ₹399. Free standard shipping is available on orders over ₹999. International shipping is available to select countries.",
     },
     {
         id: 4,
