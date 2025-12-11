@@ -15,7 +15,7 @@ interface CartContextType {
     updateQuantity: (cartItemId: number, quantity: number) => Promise<boolean>;
     removeItem: (cartItemId: number) => Promise<boolean>;
     refreshCart: () => Promise<void>;
-    clearCart: () => void;
+    clearCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -147,11 +147,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [user, refreshCart]);
 
-    // Clear cart (client-side only, used after order completion)
-    const clearCart = useCallback(() => {
+    // Clear cart (sync with backend)
+    const clearCart = useCallback(async () => {
+        if (user) {
+            try {
+                await ApiClient.clearCart(user);
+            } catch (err) {
+                console.error("Failed to clear cart on server:", err);
+                // We still clear local state even if server fails to avoid blocking UI
+            }
+        }
         setCartItems([]);
         setCartSummary(null);
-    }, []);
+    }, [user]);
 
     return (
         <CartContext.Provider

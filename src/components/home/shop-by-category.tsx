@@ -34,7 +34,7 @@ export default function ShopByCategory() {
                 const mappedCategories: Category[] = response.categories.map((cat: ApiCategory) => ({
                     id: cat.id,
                     name: cat.name,
-                    image: cat.image,
+                    image: cat.image || "/placeholder-product.jpg", // Fallback to avoid empty src error
                     imageAlt: `${cat.name} Category`,
                     link: `/products?category=${cat.name.toLowerCase().replace(/\s+/g, '-')}`,
                 }));

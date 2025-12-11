@@ -1,5 +1,5 @@
 // Order types and interfaces
-export type OrderStatus = "pending" | "delivered" | "processing" | "shipped" | "cancelled";
+export type OrderStatus = "pending" | "placed" | "delivered" | "processing" | "shipped" | "cancelled";
 
 export interface Order {
     id: string;
@@ -16,6 +16,7 @@ export interface OrderItem {
     image: string;
     quantity: number;
     price: number;
+    slug?: string;
 }
 
 export const ORDER_STATUS_CONFIG: Record<
@@ -26,6 +27,11 @@ export const ORDER_STATUS_CONFIG: Record<
         label: "Pending",
         color: "text-orange-600 dark:text-orange-400",
         bgColor: "bg-orange-100 dark:bg-orange-950/20",
+    },
+    placed: {
+        label: "Placed",
+        color: "text-blue-600 dark:text-blue-400",
+        bgColor: "bg-blue-100 dark:bg-blue-950/20",
     },
     delivered: {
         label: "Delivered",
@@ -39,8 +45,8 @@ export const ORDER_STATUS_CONFIG: Record<
     },
     shipped: {
         label: "Shipped",
-        color: "text-blue-600 dark:text-blue-400",
-        bgColor: "bg-blue-100 dark:bg-blue-950/20",
+        color: "text-purple-600 dark:text-purple-400",
+        bgColor: "bg-purple-100 dark:bg-purple-950/20",
     },
     cancelled: {
         label: "Cancelled",
@@ -54,8 +60,10 @@ export const ORDER_STATUS_CONFIG: Record<
  */
 export interface ApiOrderItem {
     product_name: string;
+    product_image?: string;
     quantity: number;
     price: number;
+    slug?: string;
 }
 
 /**

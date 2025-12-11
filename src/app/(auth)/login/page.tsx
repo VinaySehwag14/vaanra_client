@@ -32,8 +32,7 @@ export default function LoginPage() {
     try {
       // Authenticate with Google - useAuth hook will handle database verification
       await signInWithGoogle()
-      // Redirect after successful authentication - useAuth will verify user
-      router.push("/profile")
+      // Redirect handled by useAuth hook and useEffect
     } catch (error: any) {
       console.error("Error signing in with Google", error)
 

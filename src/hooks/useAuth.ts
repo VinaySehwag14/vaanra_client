@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
 import { subscribeToAuthChanges, logOut } from "../lib/authClient";
 import { ApiClient } from "../lib/api-client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsub = subscribeToAuthChanges(async (u) => {
@@ -17,6 +18,14 @@ export function useAuth() {
       setError(null);
 
       if (u) {
+        // If on register page, DO NOT VERIFY.
+        // We let the RegisterPage component handle the registration logic (either Google or Email).
+        if (pathname === "/register") {
+          setUser(u);
+          setLoading(false);
+          return;
+        }
+
         try {
           // Verify user exists in database before allowing access
           await ApiClient.verifyAndSyncUser(u);
@@ -24,7 +33,7 @@ export function useAuth() {
         } catch (error: any) {
           console.error("User verification failed:", error);
 
-          // User doesn't exist in database, sign them out
+          // User doesn't exist in database
           if (error.message === "USER_NOT_FOUND") {
             setError("Your account is not registered in our system.");
             await logOut();
@@ -42,7 +51,7 @@ export function useAuth() {
       setLoading(false);
     });
     return () => unsub();
-  }, [router]);
+  }, [router, pathname]);
 
   return { user, loading, error };
 }

@@ -11,6 +11,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/hooks/useAuth";
 import { ApiClient } from "@/lib/api-client";
+import Script from "next/script";
+
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -84,6 +91,12 @@ export default function CheckoutPage() {
         setIsSubmitting(true);
 
         try {
+            // Validate online payment specific requirements
+            if (paymentMethod === "online" && !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+                alert("Online payment is currently unavailable (Configuration Error)");
+                return;
+            }
+
             // Prepare order data
             const orderData = {
                 shipping_address: {
@@ -103,19 +116,114 @@ export default function CheckoutPage() {
                 })),
             };
 
-            const response = await ApiClient.createOrder(user, orderData);
+            // If COD, use regular createOrder
+            if (paymentMethod === "cod") {
+                const response = await ApiClient.createOrder(user, orderData);
 
-            if (response.success) {
-                clearCart();
-                router.push(`/order-confirmation/${response.order_id}`);
+                if (response.success) {
+                    await clearCart();
+                    // Fix: Redirect to thank you page with order ID (handle both structures if needed)
+                    // Assuming response.order_id is correct for COD based on ApiClient
+                    router.push(`/thank-you?orderId=${response.order_id}`);
+                } else {
+                    alert(response.message || "Failed to place order");
+                }
             } else {
-                alert(response.message || "Failed to place order");
+                // For Online Payment
+                // 1. Create Payment Order
+                const paymentOrderResponse = await ApiClient.createPaymentOrder(user, {
+                    amount: total, // Passing total amount
+                    currency: "INR",
+                    items: cartItems.map((item) => ({
+                        variant_id: item.variant_id,
+                        quantity: item.quantity,
+                    })),
+                    shipping_address: {
+                        full_name: formData.fullName,
+                        phone: formData.phone,
+                        email: formData.email,
+                        street: formData.street,
+                        city: formData.city,
+                        state: formData.state,
+                        pincode: formData.pincode,
+                        landmark: formData.landmark || undefined,
+                    }
+                });
+
+                if (!paymentOrderResponse.success || !paymentOrderResponse.order) {
+                    throw new Error(paymentOrderResponse.message || "Failed to initiate payment");
+                }
+
+                const dbOrderId = paymentOrderResponse.db_order_id; // Capture db_order_id from response
+                if (!dbOrderId) {
+                    console.warn("db_order_id missing in createPaymentOrder response");
+                }
+
+                // 2. Open Razorpay Modal
+                const options = {
+                    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                    amount: paymentOrderResponse.order.amount,
+                    currency: paymentOrderResponse.order.currency,
+                    name: "Urban Fox",
+                    description: "Order Payment",
+                    image: "/android-chrome-192x192.png", // Optional logo
+                    order_id: paymentOrderResponse.order.id,
+                    handler: async function (response: any) {
+                        try {
+                            // 3. Verify Payment
+                            const verifyRes = await ApiClient.verifyPayment(user, {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                db_order_id: dbOrderId
+                            });
+
+                            if (verifyRes.success) {
+                                await clearCart();
+                                // Fix: Check where order_id is located. Sometimes it's inside an 'order' object or at the root.
+                                router.push(`/thank-you?orderId=${dbOrderId}`);
+                            } else {
+                                alert("Payment verification failed. Please contact support.");
+                            }
+                        } catch (err) {
+                            console.error("Payment verification error:", err);
+                            alert("Payment succeeded but verification failed. Please contact support.");
+                        }
+                    },
+                    prefill: {
+                        name: formData.fullName,
+                        email: formData.email,
+                        contact: formData.phone,
+                    },
+                    theme: {
+                        color: "#000000", // Matches website theme
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            setIsSubmitting(false);
+                        }
+                    }
+                };
+
+                const rzp1 = new window.Razorpay(options);
+                rzp1.on("payment.failed", function (response: any) {
+                    alert(response.error.description);
+                    setIsSubmitting(false);
+                });
+
+                rzp1.open();
+                // Don't set submitting to false here, wait for modal dismiss or success
+                return;
             }
+
         } catch (error: any) {
             console.error("Order placement failed:", error);
             alert(error.message || "Failed to place order. Please try again.");
-        } finally {
             setIsSubmitting(false);
+        } finally {
+            if (paymentMethod === "cod") {
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -310,12 +418,12 @@ export default function CheckoutPage() {
                                         <Truck className="h-5 w-5 text-zinc-400" />
                                     </div>
 
-                                    <div className="flex items-center space-x-3 rounded-lg border border-zinc-200 p-4 opacity-50 dark:border-zinc-700">
-                                        <RadioGroupItem value="online" id="online" disabled />
-                                        <Label htmlFor="online" className="flex-1 cursor-not-allowed">
+                                    <div className="flex items-center space-x-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                                        <RadioGroupItem value="online" id="online" />
+                                        <Label htmlFor="online" className="flex-1 cursor-pointer">
                                             <div className="font-medium">Online Payment</div>
                                             <div className="text-sm text-zinc-500">
-                                                Coming soon - UPI, Cards, Net Banking
+                                                UPI, Cards, Net Banking
                                             </div>
                                         </Label>
                                         <CreditCard className="h-5 w-5 text-zinc-400" />
@@ -407,6 +515,7 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             </div>
-        </div>
+            <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+        </div >
     );
 }

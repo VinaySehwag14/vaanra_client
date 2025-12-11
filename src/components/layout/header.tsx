@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ShoppingBag, Menu, Search, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -34,11 +35,31 @@ export function Header() {
     )
 }
 
+function LogoIcon() {
+    const [error, setError] = useState(false)
+
+    if (error) {
+        return <div className="h-8 w-8 rounded-lg bg-primary" />
+    }
+
+    return (
+        <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+            <Image
+                src="/android-chrome-192x192.png"
+                alt="Urban Fox Logo"
+                fill
+                className="object-cover"
+                onError={() => setError(true)}
+            />
+        </div>
+    )
+}
+
 function Logo() {
     return (
         <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-primary" />
+                <LogoIcon />
                 <span className="text-xl font-bold tracking-tight">Urban Fox</span>
             </Link>
         </div>
@@ -129,7 +150,7 @@ function MobileNav() {
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                 <div className="flex flex-col h-full">
                     <div className="flex items-center gap-2 mb-8 px-2">
-                        <div className="h-8 w-8 rounded-lg bg-primary" />
+                        <LogoIcon />
                         <span className="text-xl font-bold tracking-tight">Urban Fox</span>
                     </div>
 

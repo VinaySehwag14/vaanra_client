@@ -97,18 +97,44 @@ export class ApiClient {
      * @param user Firebase user object
      * @returns Promise<any> - User data from backend
      */
-    static async registerUser(user: User) {
+    /**
+     * Register a new user in the backend
+     * Supports two modes:
+     * 1. Google/Social: Pass `user` object (sends Token in header)
+     * 2. Email/Pass: Pass `credentials` object (sends JSON body, no Token)
+     * @param data Either Firebase User object OR { email, password, name }
+     */
+    static async registerUser(data: User | { email: string; password?: string; name?: string }) {
         try {
-            const headers = await this.getAuthHeaders(user);
+            let headers: HeadersInit = { "Content-Type": "application/json" };
+            let body = {};
+
+            // Check if input is a Firebase User (has getIdToken method)
+            if ('getIdToken' in data) {
+                // CASE A: Google/Social Registration (Token based)
+                const token = await data.getIdToken();
+                headers["Authorization"] = `Bearer ${token}`;
+
+                body = {
+                    email: data.email,
+                    displayName: data.displayName,
+                    photoURL: data.photoURL,
+                    uid: data.uid,
+                };
+            } else {
+                // CASE B: Email/Password Registration (Credentials based)
+                // body = { email: "...", password: "..." }
+                body = {
+                    email: data.email,
+                    password: data.password,
+                    displayName: data.name,
+                };
+            }
+
             const response = await fetch(`${API_URL}/api/v1/auth/register`, {
                 method: "POST",
                 headers,
-                body: JSON.stringify({
-                    email: user.email,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    uid: user.uid,
-                }),
+                body: JSON.stringify(body),
             });
 
             if (!response.ok) {
@@ -346,6 +372,31 @@ export class ApiClient {
         }
     }
 
+    /**
+     * Get a specific order by ID
+     * @param user Firebase user object
+     * @param orderId Order ID
+     * @returns Promise<any>
+     */
+    static async getOrderById(user: User, orderId: string | number) {
+        try {
+            const headers = await this.getAuthHeaders(user);
+            const response = await fetch(`${API_URL}/api/v1/orders/${orderId}`, {
+                method: "GET",
+                headers,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch order: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching order:", error);
+            throw error;
+        }
+    }
+
     // ============================================
     // COUPONS API
     // ============================================
@@ -519,6 +570,31 @@ export class ApiClient {
             return await response.json();
         } catch (error) {
             console.error("Error removing cart item:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Clear the entire cart
+     * @param user Firebase user object
+     * @returns Promise<any>
+     */
+    static async clearCart(user: User) {
+        try {
+            const headers = await this.getAuthHeaders(user);
+            const response = await fetch(`${API_URL}/api/v1/cart`, {
+                method: "DELETE",
+                headers,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to clear cart: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error clearing cart:", error);
             throw error;
         }
     }
@@ -764,6 +840,7 @@ export class ApiClient {
         amount: number;
         currency: string;
         items: { variant_id: number; quantity: number }[];
+        shipping_address?: any; // Add shipping address
     }) {
         try {
             const headers = await this.getAuthHeaders(user);
@@ -781,6 +858,37 @@ export class ApiClient {
             return await response.json();
         } catch (error) {
             console.error("Error creating payment order:", error);
+            throw error;
+        }
+    }
+    /**
+     * Verify payment on backend
+     * @param user Firebase user object
+     * @param data Payment verification data
+     * @returns Promise<PaymentVerificationResponse>
+     */
+    static async verifyPayment(user: User, data: {
+        razorpay_order_id: string;
+        razorpay_payment_id: string;
+        razorpay_signature: string;
+        db_order_id: string; // Added as per backend requirements
+    }) {
+        try {
+            const headers = await this.getAuthHeaders(user);
+            const response = await fetch(`${API_URL}/api/v1/payments/verify`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to verify payment: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error verifying payment:", error);
             throw error;
         }
     }

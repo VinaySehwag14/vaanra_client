@@ -11,7 +11,7 @@ interface OrderCardProps {
 }
 
 export default function OrderCard({ order }: OrderCardProps) {
-    const statusConfig = ORDER_STATUS_CONFIG[order.status];
+    const statusConfig = ORDER_STATUS_CONFIG[order.status] || ORDER_STATUS_CONFIG["pending"];
 
     return (
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
@@ -59,7 +59,15 @@ export default function OrderCard({ order }: OrderCardProps) {
                         className="rounded-full"
                         asChild
                     >
-                        <Link href={`/profile/orders/${order.id}`}>Reorder</Link>
+                        <Link
+                            href={
+                                order.items.length > 0 && order.items[0].slug
+                                    ? `/products/${order.items[0].slug}`
+                                    : `/profile/orders/${order.id}`
+                            }
+                        >
+                            Reorder
+                        </Link>
                     </Button>
                     <Button
                         size="sm"
