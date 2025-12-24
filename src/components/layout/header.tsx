@@ -88,7 +88,7 @@ function Logo({ isTransparent }: { isTransparent: boolean }) {
                 "text-xl font-bold tracking-tight transition-colors duration-300 group-hover:text-primary",
                 isTransparent ? "text-white" : "text-foreground"
             )}>
-                Urban Fox
+                UrbanFox<span className="text-primary">.</span>
             </span>
         </Link>
     )
@@ -215,7 +215,7 @@ function MobileNav({ pathname, isTransparent }: { pathname: string, isTransparen
                 <div className="flex flex-col h-full">
                     <div className="flex items-center gap-3 mb-10 px-2 mt-4">
                         <LogoIcon />
-                        <span className="text-xl font-bold tracking-tight">Urban Fox</span>
+                        <span className="text-xl font-bold tracking-tight">Urban Fox<span className="text-primary">.</span></span>
                     </div>
 
                     <nav className="flex-1 flex flex-col gap-2 px-2">

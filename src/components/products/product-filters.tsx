@@ -38,18 +38,26 @@ export default function ProductFilters() {
         <>
             {/* Desktop Filters */}
             <div className="hidden lg:block w-64 space-y-8 sticky top-24 h-fit">
-                <FilterContent />
+                <div className="rounded-3xl border border-white/20 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl p-6">
+                    <div className="mb-6">
+                        <h2 className="text-xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                            Filters
+                        </h2>
+                        <div className="mt-2 h-1 w-12 rounded-full bg-gradient-to-r from-primary to-primary/50" />
+                    </div>
+                    <FilterContent />
+                </div>
             </div>
 
             {/* Mobile Filters */}
             <div className="lg:hidden">
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="outline" className="gap-2 rounded-xl">
+                        <Button variant="outline" className="gap-2 rounded-xl border-white/20 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all">
                             <Filter className="h-4 w-4" /> Filters
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-[300px] sm:w-[350px]">
+                    <SheetContent side="left" className="w-[300px] sm:w-[350px] border-white/20 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl">
                         <SheetTitle className="text-lg font-bold mb-6">Filters</SheetTitle>
                         <ScrollArea className="h-[calc(100vh-100px)] pr-4">
                             <FilterContent />
@@ -177,11 +185,14 @@ function FilterContent() {
     return (
         <div className="space-y-4">
             {hasActiveFilters && (
-                <div className="flex items-center justify-between bg-primary/5 p-3 rounded-xl mb-6">
-                    <span className="text-sm font-medium text-primary">Active Filters</span>
+                <div className="flex items-center justify-between rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 p-4 mb-6 shadow-sm">
+                    <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                        <span className="text-sm font-bold text-primary">Active Filters</span>
+                    </div>
                     <button
                         onClick={handleClearAll}
-                        className="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1"
+                        className="flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-all hover:scale-105"
                     >
                         Clear All <X className="h-3 w-3" />
                     </button>
@@ -189,16 +200,19 @@ function FilterContent() {
             )}
 
             {/* Categories */}
-            <div className="py-2">
+            <div className="rounded-2xl bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-800/50 dark:to-zinc-900/50 p-4 border border-zinc-200/50 dark:border-zinc-700/50">
                 <button
                     onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                    className="flex w-full items-center justify-between text-base font-bold text-foreground mb-3"
+                    className="flex w-full items-center justify-between text-sm font-bold text-foreground mb-3 hover:text-primary transition-colors"
                 >
-                    <span>Categories</span>
+                    <span className="flex items-center gap-2">
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        Categories
+                    </span>
                     <ChevronDown className={cn("h-4 w-4 transition-transform", isCategoryOpen && "rotate-180")} />
                 </button>
                 {isCategoryOpen && (
-                    <div className="space-y-3 pl-1">
+                    <div className="space-y-2.5 pl-1">
                         {categories.map((category) => (
                             <div key={category.id} className="flex items-center space-x-3 group">
                                 <Checkbox
@@ -213,7 +227,7 @@ function FilterContent() {
                                     htmlFor={category.id}
                                     className={cn(
                                         "text-sm font-medium cursor-pointer transition-colors group-hover:text-primary",
-                                        currentCategory === category.id ? "text-primary" : "text-muted-foreground"
+                                        currentCategory === category.id ? "text-primary font-semibold" : "text-muted-foreground"
                                     )}
                                 >
                                     {category.label}
@@ -224,15 +238,16 @@ function FilterContent() {
                 )}
             </div>
 
-            <div className="h-px bg-border/50" />
-
             {/* Price Range */}
-            <div className="py-2">
+            <div className="rounded-2xl bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-800/50 dark:to-zinc-900/50 p-4 border border-zinc-200/50 dark:border-zinc-700/50">
                 <button
                     onClick={() => setIsPriceOpen(!isPriceOpen)}
-                    className="flex w-full items-center justify-between text-base font-bold text-foreground mb-4"
+                    className="flex w-full items-center justify-between text-sm font-bold text-foreground mb-4 hover:text-primary transition-colors"
                 >
-                    <span>Price</span>
+                    <span className="flex items-center gap-2">
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        Price
+                    </span>
                     <ChevronDown className={cn("h-4 w-4 transition-transform", isPriceOpen && "rotate-180")} />
                 </button>
                 {isPriceOpen && (
@@ -245,23 +260,25 @@ function FilterContent() {
                             onValueChange={handlePriceChange}
                             className="py-4"
                         />
-                        <div className="flex items-center justify-between text-sm font-medium text-muted-foreground mt-2">
-                            <span>₹{priceRange[0]}</span>
-                            <span>₹{priceRange[1]}</span>
+                        <div className="flex items-center justify-between text-sm font-bold mt-2">
+                            <span className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary">₹{priceRange[0]}</span>
+                            <span className="text-muted-foreground">—</span>
+                            <span className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary">₹{priceRange[1]}</span>
                         </div>
                     </div>
                 )}
             </div>
 
-            <div className="h-px bg-border/50" />
-
             {/* Colors */}
-            <div className="py-2">
+            <div className="rounded-2xl bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-800/50 dark:to-zinc-900/50 p-4 border border-zinc-200/50 dark:border-zinc-700/50">
                 <button
                     onClick={() => setIsColorOpen(!isColorOpen)}
-                    className="flex w-full items-center justify-between text-base font-bold text-foreground mb-4"
+                    className="flex w-full items-center justify-between text-sm font-bold text-foreground mb-4 hover:text-primary transition-colors"
                 >
-                    <span>Color</span>
+                    <span className="flex items-center gap-2">
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        Color
+                    </span>
                     <ChevronDown className={cn("h-4 w-4 transition-transform", isColorOpen && "rotate-180")} />
                 </button>
                 {isColorOpen && (
@@ -271,9 +288,9 @@ function FilterContent() {
                                 key={color.id}
                                 onClick={() => handleColorChange(color.id)}
                                 className={cn(
-                                    "h-8 w-8 rounded-full transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                                    "h-10 w-10 rounded-full transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-md",
                                     color.class,
-                                    currentColors.includes(color.id) && "ring-2 ring-primary ring-offset-2 scale-110"
+                                    currentColors.includes(color.id) && "ring-2 ring-primary ring-offset-2 scale-110 shadow-lg"
                                 )}
                                 aria-label={`Select ${color.label} color`}
                                 title={color.label}
@@ -283,15 +300,16 @@ function FilterContent() {
                 )}
             </div>
 
-            <div className="h-px bg-border/50" />
-
             {/* Sizes */}
-            <div className="py-2">
+            <div className="rounded-2xl bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-800/50 dark:to-zinc-900/50 p-4 border border-zinc-200/50 dark:border-zinc-700/50">
                 <button
                     onClick={() => setIsSizeOpen(!isSizeOpen)}
-                    className="flex w-full items-center justify-between text-base font-bold text-foreground mb-4"
+                    className="flex w-full items-center justify-between text-sm font-bold text-foreground mb-4 hover:text-primary transition-colors"
                 >
-                    <span>Size</span>
+                    <span className="flex items-center gap-2">
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        Size
+                    </span>
                     <ChevronDown className={cn("h-4 w-4 transition-transform", isSizeOpen && "rotate-180")} />
                 </button>
                 {isSizeOpen && (
@@ -301,10 +319,10 @@ function FilterContent() {
                                 key={size}
                                 onClick={() => handleSizeChange(size)}
                                 className={cn(
-                                    "flex h-10 w-12 items-center justify-center rounded-xl border text-sm font-medium transition-all",
+                                    "flex h-11 w-14 items-center justify-center rounded-xl border text-sm font-bold transition-all hover:scale-105",
                                     currentSizes.includes(size)
-                                        ? "border-primary bg-primary text-primary-foreground shadow-md scale-105"
-                                        : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                                        ? "border-primary bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg scale-105"
+                                        : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-muted-foreground hover:border-primary/50 hover:text-foreground shadow-sm"
                                 )}
                             >
                                 {size}

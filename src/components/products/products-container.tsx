@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductGrid from "./product-grid";
 import ProductSort from "./product-sort";
+import LiveActivityFeed from "./live-activity-feed";
 import { ApiClient } from "@/lib/api-client";
 import { mapApiProductToProduct, Product, ApiProduct } from "@/types/product";
 
@@ -184,36 +185,41 @@ export default function ProductsContainer() {
     }
 
     return (
-        <div className="flex-1">
-            {/* Header with count and sort */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2">
-                    <p className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-                        {products.length} {products.length === 1 ? "Product" : "Products"}
-                    </p>
-                    {activeFilterCount > 0 && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                            {activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"} applied
-                        </span>
-                    )}
+        <>
+            <div className="flex-1">
+                {/* Header with count and sort */}
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                        <p className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
+                            {products.length} {products.length === 1 ? "Product" : "Products"}
+                        </p>
+                        {activeFilterCount > 0 && (
+                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                {activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"} applied
+                            </span>
+                        )}
+                    </div>
+                    <ProductSort />
                 </div>
-                <ProductSort />
+
+                {products.length === 0 ? (
+                    <div className="rounded-2xl bg-zinc-100 dark:bg-zinc-800 p-8 text-center">
+                        <p className="text-zinc-600 dark:text-zinc-400 text-lg">
+                            No products found
+                            {categorySlug && categorySlug !== "all" && ` in "${categorySlug}"`}
+                            {activeFilterCount > 0 && " with the selected filters"}
+                        </p>
+                        <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-2">
+                            Try adjusting your filters or browse all products
+                        </p>
+                    </div>
+                ) : (
+                    <ProductGrid products={products} />
+                )}
             </div>
 
-            {products.length === 0 ? (
-                <div className="rounded-2xl bg-zinc-100 dark:bg-zinc-800 p-8 text-center">
-                    <p className="text-zinc-600 dark:text-zinc-400 text-lg">
-                        No products found
-                        {categorySlug && categorySlug !== "all" && ` in "${categorySlug}"`}
-                        {activeFilterCount > 0 && " with the selected filters"}
-                    </p>
-                    <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-2">
-                        Try adjusting your filters or browse all products
-                    </p>
-                </div>
-            ) : (
-                <ProductGrid products={products} />
-            )}
-        </div>
+            {/* Live Activity Feed */}
+            <LiveActivityFeed />
+        </>
     );
 }

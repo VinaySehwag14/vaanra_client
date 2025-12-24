@@ -45,8 +45,13 @@ export default async function ProductsPage({
     const info = categoryInfo[category] || categoryInfo["all"];
 
     return (
-        <div className="min-h-screen bg-zinc-50 pb-20 dark:bg-zinc-950">
-            <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
+        <div className="min-h-screen bg-zinc-50 pb-20 dark:bg-zinc-950 relative overflow-hidden">
+            {/* Gradient Overlays */}
+            <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-30" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none opacity-20" />
+
+            <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8 relative z-10">
                 {/* Breadcrumbs */}
                 <div className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
                     <span>Home</span>
