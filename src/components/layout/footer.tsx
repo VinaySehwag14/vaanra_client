@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Instagram, Twitter, Youtube, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +30,7 @@ const footerLinks = [
     {
         title: "Company",
         links: [
-            { label: "About Urban Fox", href: "/about" },
+            { label: "About Vaanra", href: "/about" },
             { label: "Sustainability", href: "/sustainability" },
             { label: "Careers", href: "/careers" },
             { label: "Terms", href: "/terms" },
@@ -48,7 +49,7 @@ export function Footer() {
             {/* Massive Watermark */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full text-center pointer-events-none select-none opacity-[0.02]">
                 <h1 className="text-[10rem] font-black tracking-tighter text-white leading-none whitespace-nowrap">
-                    URBAN FOX
+                    VAANRA
                 </h1>
             </div>
 
@@ -59,9 +60,14 @@ export function Footer() {
                     <div className="w-full lg:w-1/3 flex flex-col gap-8">
                         <div>
                             <Link href="/" className="inline-block mb-3">
-                                <span className="text-2xl font-black tracking-tighter text-white">
-                                    Urban Fox<span className="text-primary">.</span>
-                                </span>
+                                <div className="relative h-14 w-14 overflow-hidden rounded-xl shadow-lg ring-1 ring-black/5 bg-gradient-primary">
+                                    <Image
+                                        src="/logo/vaanra_white_bg.png"
+                                        alt="Vaanra Logo"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
                             </Link>
                             <p className="text-zinc-400 text-sm leading-relaxed font-medium max-w-sm">
                                 Engineered for the modern urban aesthete. Sustainable, premium, and designed to stand out.
@@ -116,7 +122,7 @@ export function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-white/5 text-xs text-zinc-500 font-medium tracking-wide">
-                    <p>© {new Date().getFullYear()} Urban Fox. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} Vaanra. All rights reserved.</p>
                     <div className="flex gap-8">
                         <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
                         <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>

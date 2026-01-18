@@ -11,7 +11,7 @@ const categoryInfo: Record<string, { title: string; description: string; image: 
     hoodies: {
         title: "Hoodies",
         description: "Our latest collection of hoodies combines premium comfort with street-ready design. Perfect for any adventure.",
-        image: "/gallery/wear-waves-2.jpg",
+        image: "/gallery/vaanra-2.jpg",
     },
     sweatshirts: {
         title: "Sweatshirts",
@@ -21,12 +21,12 @@ const categoryInfo: Record<string, { title: string; description: string; image: 
     jackets: {
         title: "Jackets",
         description: "Brave the elements with our stylish jackets. From lightweight windbreakers to warm winter coats.",
-        image: "/looks/urban-explorer.jpg",
+        image: "/looks/vaanra-explorer.jpg",
     },
     bottoms: {
         title: "Bottoms",
         description: "Complete your look with our versatile bottoms. Joggers, cargos, and shorts for every occasion.",
-        image: "/gallery/wear-waves-1.jpg",
+        image: "/gallery/vaanra-1.jpg",
     },
     all: {
         title: "All Products",

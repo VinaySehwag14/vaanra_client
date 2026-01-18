@@ -33,7 +33,7 @@ export default function ShopByCategory() {
                 const mappedCategories: Category[] = response.categories.map((cat: ApiCategory) => ({
                     id: cat.id,
                     name: cat.name,
-                    image: cat.image_url || cat.image || "/gallery/wear-waves-1.jpg",
+                    image: cat.image_url || cat.image || "/gallery/vaanra-1.jpg",
                     imageAlt: `${cat.name} Category`,
                     link: `/products?category=${cat.name.toLowerCase().replace(/\s+/g, '-')}`,
                 }));

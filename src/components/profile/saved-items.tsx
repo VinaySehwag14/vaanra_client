@@ -20,13 +20,13 @@ const savedItems = [
     {
         id: 3,
         name: "Oceanic Hoodie",
-        image: "/gallery/wear-waves-2.jpg",
+        image: "/gallery/vaanra-2.jpg",
         href: "/products/3",
     },
     {
         id: 4,
         name: "Sunbeam Beanie",
-        image: "/gallery/wear-waves-1.jpg",
+        image: "/gallery/vaanra-1.jpg",
         href: "/products/4",
     },
     {

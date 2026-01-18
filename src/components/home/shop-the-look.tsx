@@ -27,15 +27,15 @@ interface Look {
 const looks: Look[] = [
     {
         id: 1,
-        title: "Urban Utility",
+        title: "Vaanra Utility",
         description: "Engineered for the city. Functional cuts meet premium tech fabrics for the ultimate commuter reflex.",
-        image: "/gallery/wear-waves-3.jpg",
+        image: "/gallery/vaanra-3.jpg",
         products: [
             {
                 id: 101,
                 name: "Tech Hoodie",
                 price: "₹3,999",
-                image: "/gallery/wear-waves-3.jpg",
+                image: "/gallery/vaanra-3.jpg",
                 link: "/products?category=hoodies",
                 position: { top: "30%", left: "50%" }
             },
@@ -43,7 +43,7 @@ const looks: Look[] = [
                 id: 102,
                 name: "Utility Cargo",
                 price: "₹2,499",
-                image: "/gallery/wear-waves-2.jpg",
+                image: "/gallery/vaanra-2.jpg",
                 link: "/products?category=pants",
                 position: { top: "65%", left: "55%" }
             }
@@ -53,13 +53,13 @@ const looks: Look[] = [
         id: 2,
         title: "Monochrome Set",
         description: "Effortless coordination. The matching set that takes the thinking out of getting dressed.",
-        image: "/gallery/wear-waves-1.jpg",
+        image: "/gallery/vaanra-1.jpg",
         products: [
             {
                 id: 201,
                 name: "Relaxed Tee",
                 price: "₹1,499",
-                image: "/gallery/wear-waves-1.jpg",
+                image: "/gallery/vaanra-1.jpg",
                 link: "/products?category=t-shirts",
                 position: { top: "35%", left: "45%" }
             },
@@ -67,7 +67,7 @@ const looks: Look[] = [
                 id: 202,
                 name: "Sweat Shorts",
                 price: "₹1,299",
-                image: "/gallery/wear-waves-1.jpg",
+                image: "/gallery/vaanra-1.jpg",
                 link: "/products?category=shorts",
                 position: { top: "68%", left: "48%" }
             }
@@ -77,13 +77,13 @@ const looks: Look[] = [
         id: 3,
         title: "Statement Pop",
         description: "Stand out in the crowd with our signature yellow hue.",
-        image: "/gallery/wear-waves-4.jpg",
+        image: "/gallery/vaanra-4.jpg",
         products: [
             {
                 id: 301,
                 name: "Heavyweight Hoodie",
                 price: "₹4,499",
-                image: "/gallery/wear-waves-4.jpg",
+                image: "/gallery/vaanra-4.jpg",
                 link: "/products?color=yellow",
                 position: { top: "40%", left: "50%" }
             }

@@ -12,7 +12,7 @@ const initialSavedItems: SavedItem[] = [
         name: "Cosmic Wave Hoodie",
         category: "Hoodie",
         price: 89.00,
-        image: "/gallery/wear-waves-2.jpg",
+        image: "/gallery/vaanra-2.jpg",
         inStock: true,
     },
     {
@@ -41,10 +41,10 @@ const initialSavedItems: SavedItem[] = [
     },
     {
         id: "5",
-        name: "Urban Explorer Jacket",
+        name: "Vaanra Explorer Jacket",
         category: "Jacket",
         price: 120.00,
-        image: "/looks/urban-explorer.jpg",
+        image: "/looks/vaanra-explorer.jpg",
         inStock: false,
     },
     {
@@ -52,7 +52,7 @@ const initialSavedItems: SavedItem[] = [
         name: "Minimal Crewneck",
         category: "Sweatshirt",
         price: 65.00,
-        image: "/gallery/wear-waves-1.jpg",
+        image: "/gallery/vaanra-1.jpg",
         inStock: true,
     },
 ];

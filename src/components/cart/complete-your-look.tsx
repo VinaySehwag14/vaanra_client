@@ -19,7 +19,7 @@ const recommendedProducts: RecommendedProduct[] = [
         name: "Wave Cap",
         description: "Black",
         price: 25.00,
-        image: "/gallery/wear-waves-1.jpg",
+        image: "/gallery/vaanra-1.jpg",
     },
     {
         id: "2",

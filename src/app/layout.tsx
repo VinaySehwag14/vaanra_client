@@ -21,8 +21,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Urban Fox - Premium Clothing",
+  title: "Vaanra - Premium Clothing",
   description: "Your one-stop shop for premium urban clothing.",
+  icons: {
+    icon: "/logo/favicon_brand.png",
+  },
 };
 
 export default function RootLayout({

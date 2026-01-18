@@ -21,7 +21,7 @@ export default function FeaturedProduct({
     description = "Ultra-heavyweight cotton. Boxy fit. The essential hoodie for the season.",
     buttonText = "Grab Now",
     buttonLink = "/products?collection=wave-hoodie",
-    image = "/gallery/wear-waves-4.jpg",
+    image = "/gallery/vaanra-4.jpg",
     imageAlt = "The Wave Hoodie",
 }: Partial<FeaturedProductProps> = {}) {
     return (

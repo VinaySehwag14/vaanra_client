@@ -32,7 +32,7 @@ export default function AboutUsPage() {
                     <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
                         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
                             <Image
-                                src="/looks/urban-explorer.jpg"
+                                src="/looks/vaanra-explorer.jpg"
                                 alt="Our Mission"
                                 fill
                                 className="object-cover"
@@ -43,7 +43,7 @@ export default function AboutUsPage() {
                                 Our Mission
                             </h2>
                             <p className="mb-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-                                At Urban Fox, our mission is simple: to create comfortable, stylish, and sustainable streetwear that empowers you to express yourself.
+                                At Vaanra, our mission is simple: to create comfortable, stylish, and sustainable streetwear that empowers you to express yourself.
                             </p>
                             <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
                                 We believe fashion should be accessible, ethical, and fun. That's why we use eco-friendly materials and ethical manufacturing practices to bring you clothing that looks good and feels even better.
@@ -120,7 +120,7 @@ export default function AboutUsPage() {
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-6">
                         <div className="relative aspect-square overflow-hidden rounded-2xl">
                             <Image
-                                src="/gallery/wear-waves-1.jpg"
+                                src="/gallery/vaanra-1.jpg"
                                 alt="Behind the scenes"
                                 fill
                                 className="object-cover transition-transform duration-300 hover:scale-110"
@@ -144,7 +144,7 @@ export default function AboutUsPage() {
                         </div>
                         <div className="relative aspect-square overflow-hidden rounded-2xl">
                             <Image
-                                src="/looks/urban-explorer.jpg"
+                                src="/looks/vaanra-explorer.jpg"
                                 alt="Design process"
                                 fill
                                 className="object-cover transition-transform duration-300 hover:scale-110"
@@ -152,7 +152,7 @@ export default function AboutUsPage() {
                         </div>
                         <div className="relative aspect-square overflow-hidden rounded-2xl md:col-span-2 md:row-span-1">
                             <Image
-                                src="/gallery/wear-waves-2.jpg"
+                                src="/gallery/vaanra-2.jpg"
                                 alt="Our community"
                                 fill
                                 className="object-cover transition-transform duration-300 hover:scale-110"

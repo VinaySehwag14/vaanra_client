@@ -1,6 +1,6 @@
 import HeroCarousel from "@/components/home/hero-carousel";
 import ShopTheLook from "@/components/home/shop-the-look";
-import UrbanFoxFam from "@/components/home/wear-waves-fam";
+import VaanraFam from "@/components/home/vaanra-fam";
 import FeaturedProduct from "@/components/home/featured-product";
 import TrendingCollections from "@/components/home/trending-collections";
 import ShopByCategory from "@/components/home/shop-by-category";
@@ -27,8 +27,8 @@ export default function Home() {
       {/* Shop the Look Section */}
       <ShopTheLook />
 
-      {/* UrbanFox Fam Gallery Section */}
-      <UrbanFoxFam />
+      {/* Vaanra Fam Gallery Section */}
+      <VaanraFam />
 
       {/* Featured Product Section */}
       <FeaturedProduct />

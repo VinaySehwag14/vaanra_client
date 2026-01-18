@@ -158,9 +158,9 @@ export default function CheckoutPage() {
                     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                     amount: paymentOrderResponse.order.amount,
                     currency: paymentOrderResponse.order.currency,
-                    name: "Urban Fox",
+                    name: "Vaanra",
                     description: "Order Payment",
-                    image: "/android-chrome-192x192.png",
+                    image: "/logo/vaanra_white_bg.png",
                     order_id: paymentOrderResponse.order.id,
                     handler: async function (response: any) {
                         try {

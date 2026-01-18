@@ -106,7 +106,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationPageP
                             Check our FAQ
                         </Link>{" "}
                         or{" "}
-                        <a href="mailto:support@urbanfox.com" className="text-primary hover:underline">
+                        <a href="mailto:support@vaanra.com" className="text-primary hover:underline">
                             contact support
                         </a>
                     </p>

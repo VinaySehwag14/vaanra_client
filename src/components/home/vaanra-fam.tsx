@@ -16,45 +16,45 @@ interface GalleryImage {
 const galleryImages: GalleryImage[] = [
     {
         id: 1,
-        image: "/gallery/wear-waves-1.jpg",
-        user: "#urban_style",
+        image: "/gallery/vaanra-1.jpg",
+        user: "#vaanra_style",
         likes: "2.4k",
         link: "/products?style=matching-sets",
     },
     {
         id: 2,
-        image: "/gallery/wear-waves-2.jpg",
-        user: "#street_fox",
+        image: "/gallery/vaanra-2.jpg",
+        user: "#street_vaanra",
         likes: "1.8k",
         link: "/products?style=streetwear",
     },
     {
         id: 3,
-        image: "/gallery/wear-waves-3.jpg",
+        image: "/gallery/vaanra-3.jpg",
         user: "#fashion_daily",
         likes: "3.2k",
         link: "/products?category=hoodies",
     },
     {
         id: 4,
-        image: "/gallery/wear-waves-4.jpg",
+        image: "/gallery/vaanra-4.jpg",
         user: "#color_pop",
         likes: "4.1k",
         link: "/products?color=yellow",
     },
     {
         id: 5,
-        image: "/looks/urban-explorer.jpg",
+        image: "/looks/vaanra-explorer.jpg",
         user: "#explorer_life",
         likes: "1.5k",
-        link: "/products?collection=urban-explorer",
+        link: "/products?collection=vaanra-explorer",
     },
 ];
 
 // Duplicate for infinite loop
 const marqueeImages = [...galleryImages, ...galleryImages, ...galleryImages];
 
-export default function UrbanFoxFam() {
+export default function VaanraFam() {
     return (
         <section className="w-full py-16 border-t border-zinc-100 dark:border-zinc-900 overflow-hidden relative bg-zinc-50/50 dark:bg-zinc-950/50">
             {/* Background Blur Elements */}
@@ -68,7 +68,7 @@ export default function UrbanFoxFam() {
                         Join The Movement
                     </span>
                     <h2 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
-                        #UrbanFoxFam
+                        #VaanraFam
                     </h2>
                 </div>
 

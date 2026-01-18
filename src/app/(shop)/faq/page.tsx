@@ -163,7 +163,7 @@ export default function FAQPage() {
                         size="lg"
                         className="rounded-full bg-white text-primary hover:bg-zinc-100"
                     >
-                        <a href="mailto:support@urbanfox.com">Contact Us</a>
+                        <a href="mailto:support@vaanra.com">Contact Us</a>
                     </Button>
                 </div>
             </div>

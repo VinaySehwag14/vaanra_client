@@ -8,10 +8,10 @@ export default function CompleteLook() {
     const bundleItems = [
         {
             id: 1,
-            name: "Urban Wave Hoodie",
+            name: "Vaanra Wave Hoodie",
             price: 1299,
             originalPrice: 1999,
-            image: "/gallery/wear-waves-2.jpg",
+            image: "/gallery/vaanra-2.jpg",
             isMain: true
         },
         {
@@ -19,15 +19,15 @@ export default function CompleteLook() {
             name: "Dockside Beanie",
             price: 599,
             originalPrice: 899,
-            image: "/gallery/wear-waves-1.jpg",
+            image: "/gallery/vaanra-1.jpg",
             isMain: false
         },
         {
             id: 3,
-            name: "Urban Joggers",
+            name: "Vaanra Joggers",
             price: 1499,
             originalPrice: 2199,
-            image: "/gallery/wear-waves-3.jpg",
+            image: "/gallery/vaanra-3.jpg",
             isMain: false
         }
     ];

@@ -37,7 +37,7 @@ export function Header() {
                     "w-full transition-all duration-500",
                     isTransparent
                         ? "bg-transparent py-4 md:py-6"
-                        : "bg-white dark:bg-zinc-950 shadow-sm border-b border-zinc-200/50 dark:border-zinc-800/50 py-3"
+                        : "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm border-b border-zinc-200/50 dark:border-zinc-800/50 py-3"
                 )}
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
@@ -60,20 +60,21 @@ export function Header() {
     )
 }
 
-function LogoIcon() {
+function LogoIcon({ className = "h-9 w-9" }: { className?: string }) {
     const [error, setError] = useState(false)
 
     if (error) {
-        return <div className="h-9 w-9 rounded-xl bg-gradient-primary" />
+        return <div className={cn("rounded-xl bg-gradient-primary", className)} />
     }
 
     return (
-        <div className="relative h-9 w-9 overflow-hidden rounded-xl shadow-lg ring-1 ring-black/5 transition-transform hover:scale-105 active:scale-95">
+        <div className={cn("relative transition-transform duration-300 hover:scale-110 overflow-hidden", className)}>
             <Image
-                src="/android-chrome-192x192.png"
-                alt="Urban Fox Logo"
+                src="/logo/vaanra_white_bg.png"
+                alt="Vaanra Logo"
                 fill
-                className="object-cover"
+                className="object-contain scale-150"
+                priority
                 onError={() => setError(true)}
             />
         </div>
@@ -83,13 +84,7 @@ function LogoIcon() {
 function Logo({ isTransparent }: { isTransparent: boolean }) {
     return (
         <Link href="/" className="flex items-center gap-3 group">
-            <LogoIcon />
-            <span className={cn(
-                "text-xl font-bold tracking-tight transition-colors duration-300 group-hover:text-primary",
-                isTransparent ? "text-white" : "text-foreground"
-            )}>
-                UrbanFox<span className="text-primary">.</span>
-            </span>
+            <LogoIcon className="w-32 h-14 md:w-96 md:h-32" />
         </Link>
     )
 }
@@ -104,10 +99,10 @@ function DesktopNav({ pathname, isTransparent }: { pathname: string, isTranspare
                         key={link.href}
                         href={link.href}
                         className={cn(
-                            "relative px-4 py-2 text-sm font-medium transition-colors hover:text-primary rounded-full",
+                            "relative px-4 py-2 text-sm font-medium tracking-wide transition-colors hover:text-primary",
                             isActive
-                                ? "text-primary bg-primary/5"
-                                : isTransparent ? "text-white/90 hover:text-white hover:bg-white/10" : "text-muted-foreground"
+                                ? "text-primary"
+                                : isTransparent ? "text-white/90 hover:text-white" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
                         {link.label}
@@ -137,7 +132,7 @@ function ActionButtons({ isTransparent }: { isTransparent: boolean }) {
         setMounted(true);
     }, []);
 
-    const displayName = user?.displayName || user?.email?.split("@")[0] || "Urban Fox";
+    const displayName = user?.displayName || user?.email?.split("@")[0] || "Vaanra";
     const initials = user
         ? displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
         : "UF";
@@ -214,8 +209,7 @@ function MobileNav({ pathname, isTransparent }: { pathname: string, isTransparen
             <SheetContent side="left" className="w-[300px] sm:w-[400px] border-r border-white/20 bg-glass backdrop-blur-xl">
                 <div className="flex flex-col h-full">
                     <div className="flex items-center gap-3 mb-10 px-2 mt-4">
-                        <LogoIcon />
-                        <span className="text-xl font-bold tracking-tight">Urban Fox<span className="text-primary">.</span></span>
+                        <LogoIcon className="w-52 h-20" />
                     </div>
 
                     <nav className="flex-1 flex flex-col gap-2 px-2">
@@ -231,10 +225,10 @@ function MobileNav({ pathname, isTransparent }: { pathname: string, isTransparen
                                     <Link
                                         href={link.href}
                                         className={cn(
-                                            "flex items-center justify-between p-3 rounded-xl transition-all duration-300",
+                                            "flex items-center justify-between p-4 rounded-xl transition-all duration-300 border border-transparent",
                                             isActive
-                                                ? "bg-primary/5 text-primary font-semibold translate-x-2"
-                                                : "text-muted-foreground hover:text-foreground hover:bg-white/50"
+                                                ? "bg-primary/5 border-primary/10 text-primary font-semibold translate-x-1"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-white/50 hover:pl-6"
                                         )}
                                     >
                                         <span className="text-lg">{link.label}</span>

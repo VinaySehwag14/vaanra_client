@@ -8,15 +8,15 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 const galleryImages = [
-    { id: 1, src: "/gallery/wear-waves-1.jpg", user: "#urban_style", likes: "2.4k", link: "/products?category=t-shirts" },
-    { id: 2, src: "/gallery/wear-waves-2.jpg", user: "#street_fox", likes: "1.8k", link: "/products?category=hoodies" },
-    { id: 3, src: "/gallery/wear-waves-3.jpg", user: "#fashion_daily", likes: "3.2k", link: "/products?category=accessories" },
-    { id: 4, src: "/gallery/wear-waves-4.jpg", user: "#color_pop", likes: "4.1k", link: "/products?category=seasonal" },
-    { id: 5, src: "/looks/urban-explorer.jpg", user: "#explorer_life", likes: "1.5k", link: "/products?collection=urban-explorer" },
+    { id: 1, src: "/gallery/vaanra-1.jpg", user: "#vaanra_style", likes: "2.4k", link: "/products?category=t-shirts" },
+    { id: 2, src: "/gallery/vaanra-2.jpg", user: "#street_vaanra", likes: "1.8k", link: "/products?category=hoodies" },
+    { id: 3, src: "/gallery/vaanra-3.jpg", user: "#fashion_daily", likes: "3.2k", link: "/products?category=accessories" },
+    { id: 4, src: "/gallery/vaanra-4.jpg", user: "#color_pop", likes: "4.1k", link: "/products?category=seasonal" },
+    { id: 5, src: "/looks/vaanra-explorer.jpg", user: "#explorer_life", likes: "1.5k", link: "/products?collection=vaanra-explorer" },
     { id: 6, src: "/looks/coastal-vibe.jpg", user: "#beach_vibes", likes: "2.9k", link: "/products?collection=coastal-vibe" },
     // Duplicates for demo density
-    { id: 7, src: "/gallery/wear-waves-2.jpg", user: "#city_walker", likes: "1.2k", link: "/products?category=hoodies" },
-    { id: 8, src: "/gallery/wear-waves-1.jpg", user: "#minimal_me", likes: "5.6k", link: "/products?category=t-shirts" },
+    { id: 7, src: "/gallery/vaanra-2.jpg", user: "#city_walker", likes: "1.2k", link: "/products?category=hoodies" },
+    { id: 8, src: "/gallery/vaanra-1.jpg", user: "#minimal_me", likes: "5.6k", link: "/products?category=t-shirts" },
 ];
 
 export default function GalleryPage() {
@@ -32,7 +32,7 @@ export default function GalleryPage() {
                     className="max-w-3xl mx-auto space-y-6"
                 >
                     <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm tracking-widest uppercase mb-4">
-                        #UrbanFoxFam
+                        #VaanraFam
                     </span>
                     <h1 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white tracking-tighter">
                         Wear It. Share It.<br />
@@ -41,13 +41,13 @@ export default function GalleryPage() {
                         </span>
                     </h1>
                     <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-                        Join 50,000+ creators styling Urban Fox their way. Tag us on Instagram to be featured here!
+                        Join 50,000+ creators styling Vaanra their way. Tag us on Instagram to be featured here!
                     </p>
 
                     <div className="flex flex-wrap justify-center gap-4 pt-4">
                         <Button className="h-12 px-8 rounded-full bg-black dark:bg-white text-white dark:text-black font-bold text-lg hover:scale-105 transition-transform shadow-xl">
                             <Instagram className="w-5 h-5 mr-2" />
-                            Follow @urbanfox
+                            Follow @vaanra
                         </Button>
                         <Button variant="outline" className="h-12 px-8 rounded-full border-2 font-bold text-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:scale-105 transition-transform">
                             <Camera className="w-5 h-5 mr-2" />

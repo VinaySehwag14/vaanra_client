@@ -153,14 +153,14 @@ export default function FlashSale() {
 
                         <div className="relative w-64 md:w-80 aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 z-10 rotate-[-6deg] group-hover:rotate-0 transition-transform duration-500 ease-out border-4 border-white/10">
                             <Image
-                                src="/gallery/wear-waves-4.jpg"
+                                src="/gallery/vaanra-4.jpg"
                                 alt="Flash Sale Product"
                                 fill
                                 className="object-cover"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                             <div className="absolute bottom-6 left-6 right-6">
-                                <div className="text-white font-bold text-xl">Urban Bomber</div>
+                                <div className="text-white font-bold text-xl">Vaanra Bomber</div>
                                 <div className="text-white/60 text-sm">Limited Edition</div>
                                 <div className="mt-2 flex items-center gap-2">
                                     <span className="text-primary font-bold text-lg">₹2,499</span>
