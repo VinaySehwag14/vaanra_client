@@ -23,9 +23,6 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Vaanra - Wear the unbound",
   description: "Your one-stop shop for premium urban clothing.",
-  icons: {
-    icon: "/logo/vaanra_iconic_rm_bg.png",
-  },
 };
 
 export default function RootLayout({
