@@ -59,15 +59,21 @@ export function Footer() {
                     {/* Left Column: Brand, Desc, Newsletter, Socials */}
                     <div className="w-full lg:w-1/3 flex flex-col gap-8">
                         <div>
-                            <Link href="/" className="inline-block mb-3">
-                                <div className="relative h-14 w-14 overflow-hidden rounded-xl shadow-lg ring-1 ring-black/5 bg-gradient-primary">
+                            <Link href="/" className="inline-flex items-center gap-3 mb-3 group">
+                                <div className="relative h-12 w-12 transition-transform duration-300 group-hover:scale-110">
                                     <Image
-                                        src="/logo/vaanra_white_bg.png"
+                                        src="/logo/vaanra_iconic_rm_bg.png"
                                         alt="Vaanra Logo"
                                         fill
-                                        className="object-cover"
+                                        className="object-contain"
                                     />
                                 </div>
+                                <span
+                                    className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#DD6031] via-[#E07A4C] to-[#DD6031] transition-all duration-300 group-hover:tracking-wide"
+                                    style={{ fontFamily: "'Inter', sans-serif" }}
+                                >
+                                    VAANRA
+                                </span>
                             </Link>
                             <p className="text-zinc-400 text-sm leading-relaxed font-medium max-w-sm">
                                 Engineered for the modern urban aesthete. Sustainable, premium, and designed to stand out.

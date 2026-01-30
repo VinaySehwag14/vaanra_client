@@ -60,7 +60,7 @@ export function Header() {
     )
 }
 
-function LogoIcon({ className = "h-9 w-9" }: { className?: string }) {
+function LogoIcon({ className = "h-10 w-10" }: { className?: string }) {
     const [error, setError] = useState(false)
 
     if (error) {
@@ -68,12 +68,12 @@ function LogoIcon({ className = "h-9 w-9" }: { className?: string }) {
     }
 
     return (
-        <div className={cn("relative transition-transform duration-300 hover:scale-110 overflow-hidden", className)}>
+        <div className={cn("relative transition-transform duration-300 hover:scale-110", className)}>
             <Image
-                src="/logo/vaanra_white_bg.png"
+                src="/logo/vaanra_iconic_rm_bg.png"
                 alt="Vaanra Logo"
                 fill
-                className="object-contain scale-150"
+                className="object-contain"
                 priority
                 onError={() => setError(true)}
             />
@@ -83,8 +83,27 @@ function LogoIcon({ className = "h-9 w-9" }: { className?: string }) {
 
 function Logo({ isTransparent }: { isTransparent: boolean }) {
     return (
-        <Link href="/" className="flex items-center gap-3 group">
-            <LogoIcon className="w-32 h-14 md:w-96 md:h-32" />
+        <Link href="/" className="flex items-center gap-2 group">
+            {/* Iconic Logo */}
+            <LogoIcon className="w-12 h-12 md:w-14 md:h-14" />
+
+            {/* Brand Name with Effect */}
+            <span
+                className={cn(
+                    "text-xl md:text-2xl font-bold tracking-tight transition-all duration-300",
+                    "bg-clip-text text-transparent",
+                    isTransparent
+                        ? "bg-gradient-to-r from-white via-white to-white/80"
+                        : "bg-gradient-to-r from-[#DD6031] via-[#E07A4C] to-[#DD6031]",
+                    "group-hover:tracking-wide"
+                )}
+                style={{
+                    fontFamily: "'Inter', sans-serif",
+                    letterSpacing: "0.02em"
+                }}
+            >
+                VAANRA
+            </span>
         </Link>
     )
 }
