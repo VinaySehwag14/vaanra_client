@@ -21,10 +21,10 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Vaanra - Premium Clothing",
+  title: "Vaanra - Wear the unbound",
   description: "Your one-stop shop for premium urban clothing.",
   icons: {
-    icon: "/logo/favicon_brand.png",
+    icon: "/logo/vaanra_iconic_rm_bg.png",
   },
 };
 
