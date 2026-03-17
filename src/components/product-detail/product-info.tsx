@@ -9,7 +9,7 @@ import { ProductVariant } from "@/types/product";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/context/cart-context";
 
-const COLOR_MAP: Record<string, string> = {
+const DEFAULT_COLOR_MAP: Record<string, string> = {
     "black": "#000000",
     "white": "#FFFFFF",
     "navy": "#1a365d",
@@ -19,19 +19,7 @@ const COLOR_MAP: Record<string, string> = {
     "gray": "#718096",
     "grey": "#718096",
     "beige": "#F5F5DC",
-    "cream": "#FFFDD0",
-    "sand": "#C2B280",
-    "sandstone": "#786D5F",
-    "olive": "#808000",
-    "maroon": "#800000",
-    "brown": "#8B4513",
-    "tan": "#D2B48C",
-    "khaki": "#F0E68C",
-    "charcoal": "#36454F",
-    "burgundy": "#800020",
-    "teal": "#008080",
-    "forest green": "#228B22",
-    "sea green": "#2E8B57",
+    "cream": "#FFFDD0"
 };
 
 interface ProductInfoProps {
@@ -43,6 +31,7 @@ interface ProductInfoProps {
     description: string;
     stock: number;
     variants: ProductVariant[];
+    onChangeColor?: (color: string) => void;
 }
 
 export default function ProductInfo({
@@ -53,7 +42,8 @@ export default function ProductInfo({
     reviews,
     description,
     stock,
-    variants
+    variants,
+    onChangeColor
 }: ProductInfoProps) {
     const router = useRouter();
     const { user } = useAuth();
@@ -63,20 +53,50 @@ export default function ProductInfo({
     const [selectedSize, setSelectedSize] = useState<string>("");
     const [addingToCart, setAddingToCart] = useState(false);
     const [isWishlisted, setIsWishlisted] = useState(false);
+    const [colorMap, setColorMap] = useState<Record<string, string>>(DEFAULT_COLOR_MAP);
 
-    // Extract unique colors and sizes
+    useEffect(() => {
+        const fetchColors = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/colors`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.colors && Array.isArray(data.colors)) {
+                        const newMap = { ...DEFAULT_COLOR_MAP };
+                        data.colors.forEach((c: any) => {
+                            newMap[c.name.toLowerCase()] = c.hex_code;
+                        });
+                        setColorMap(newMap);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch global colors", error);
+            }
+        };
+        fetchColors();
+    }, []);
+
+    // Pre-defined size order
+    const sizeOrder = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"];
+
+    // Extract unique colors and sizes from ALL variants (don't filter based on selection for the available array itself initially)
     const variantColors = Array.from(new Set(variants.filter(v => v.color).map(v => v.color).filter((c): c is string => !!c)));
-    const variantSizes = Array.from(new Set(variants.filter(v => v.size).map(v => v.size).filter((s): s is string => !!s)));
+    const variantSizes = Array.from(new Set(variants.filter(v => v.size).map(v => v.size).filter((s): s is string => !!s)))
+        .sort((a, b) => {
+            const indexA = sizeOrder.indexOf(a);
+            const indexB = sizeOrder.indexOf(b);
+            // If both are in the predefined list, sort by order
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            // If only one is in the list, prioritize the one in the list
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+            // Otherwise, alphabetize
+            return a.localeCompare(b);
+        });
 
-    // Filter available sizes based on selected color
-    const availableSizes = selectedColor
-        ? variants.filter(v => v.color === selectedColor && v.size).map(v => v.size).filter((s): s is string => !!s)
-        : variantSizes;
-
-    // Filter available colors based on selected size
-    const availableColors = selectedSize
-        ? variants.filter(v => v.size === selectedSize && v.color).map(v => v.color).filter((c): c is string => !!c)
-        : variantColors;
+    // We don't want to re-filter available colors based on size because it removes color options
+    const availableColors = variantColors;
+    const availableSizes = variantSizes;
 
     // Auto-select first available options
     useEffect(() => {
@@ -173,13 +193,20 @@ export default function ProductInfo({
                     <div className="flex gap-3">
                         {availableColors.map((color) => {
                             const isSelected = selectedColor === color;
-                            const hexColor = COLOR_MAP[color.toLowerCase()] || "#888888";
+                            // First try to get hex from the variant data itself (backend enriched)
+                            const variantWithHex = variants.find(v => v.color === color && (v as any).color_hex);
+                            const hexColor = (variantWithHex as any)?.color_hex || colorMap[color.toLowerCase()] || "#888888";
                             const isLight = ['#FFFFFF', '#FFFDD0', '#F5F5DC'].includes(hexColor.toUpperCase());
 
                             return (
                                 <button
                                     key={color}
-                                    onClick={() => setSelectedColor(color)}
+                                    onClick={() => {
+                                        setSelectedColor(color);
+                                        if (onChangeColor) {
+                                            onChangeColor(color);
+                                        }
+                                    }}
                                     className={cn(
                                         "w-10 h-10 rounded-full transition-all duration-200",
                                         isSelected

@@ -27,12 +27,24 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
     useEffect(() => {
         async function fetchProduct() {
             try {
                 setLoading(true);
                 const data = await ApiClient.getProductBySlug(slug);
-                setProduct(data);
+                // The API might return { success: true, product: { ... } } or just the product object
+                const productData = data.product || data;
+                setProduct(productData);
+
+                // Initialize default color if we have variants
+                if (productData?.variants && productData.variants.length > 0) {
+                    const firstColor = productData.variants.find((v: ProductVariant) => v.color)?.color;
+                    if (firstColor) {
+                        setSelectedColor(firstColor);
+                    }
+                }
             } catch (err) {
                 console.error("Failed to fetch product:", err);
                 setError("Failed to load product details");
@@ -101,15 +113,31 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
         );
     }
 
-    // Get all image URLs - handle both new format and legacy format
-    const images = (product.images || [])
-        .sort((a: ProductImage, b: ProductImage) => {
-            if (a.is_primary) return -1;
-            if (b.is_primary) return 1;
-            return (a.sort_order ?? 0) - (b.sort_order ?? 0);
-        })
-        .map((img: ProductImage) => img.image_url || img.url || '')
-        .filter((url: string) => url !== '');
+    // Get images - filter by selected color if the URL or variant has a color match
+    // Depending on data structure we might not have direct image color mapping, 
+    // but variants do have image_url so we can prioritize variant images first.
+    let displayImages: string[] = [];
+
+    if (selectedColor && product.variants) {
+        // Collect specific variant images for this color
+        const variantImages = product.variants
+            .filter((v: any) => v.color === selectedColor && v.image_url)
+            .map((v: any) => v.image_url as string);
+
+        displayImages = [...new Set(variantImages)];
+    }
+
+    // If no specific variant images or want to include all product images, add product images
+    if (displayImages.length === 0 && product.images) {
+        displayImages = product.images
+            .sort((a, b) => {
+                if (a.is_primary) return -1;
+                if (b.is_primary) return 1;
+                return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+            })
+            .map((img) => img.image_url || img.url || '')
+            .filter((url) => url !== '');
+    }
 
     // Calculate pricing - support both new and legacy API fields
     const currentPrice = product.selling_price ?? product.sale_price ?? product.price ?? 0;
@@ -144,7 +172,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                 <div className="grid gap-8 lg:grid-cols-2 lg:gap-16 mb-20">
                     {/* Left: Product Gallery */}
                     <div className="lg:sticky lg:top-24 lg:self-start">
-                        <ProductGallery images={images} />
+                        <ProductGallery images={displayImages} />
                     </div>
 
                     {/* Right: Product Info */}
@@ -158,6 +186,7 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                             description={product.description ?? ""}
                             stock={productStock}
                             variants={product.variants || []}
+                            onChangeColor={(color) => setSelectedColor(color)}
                         />
                     </div>
                 </div>
@@ -165,14 +194,14 @@ export default function ProductDetailClient({ slug }: ProductDetailClientProps) 
                 {/* Additional Sections */}
                 <div className="space-y-20 pb-20">
                     {/* Visual Details Grid */}
-                    {images.length > 1 && (
+                    {displayImages.length > 1 && (
                         <section>
                             <div className="flex items-center gap-4 mb-8">
                                 <h2 className="text-2xl font-bold text-gray-900">Product Gallery</h2>
                                 <div className="h-px bg-gray-200 flex-1" />
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {images.map((image: string, index: number) => (
+                                {displayImages.map((image: string, index: number) => (
                                     <div
                                         key={index}
                                         className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-50 border border-gray-100 group cursor-pointer"

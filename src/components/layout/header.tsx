@@ -14,15 +14,32 @@ import { useAuth } from "@/hooks/useAuth"
 import { useCart } from "@/context/cart-context"
 import { cn } from "@/lib/utils"
 
-const navLinks = [
-    { href: "/products?category=t-shirts", label: "T-Shirts" },
-    { href: "/products?category=hoodies", label: "Hoodies" },
-    { href: "/products?category=sweatshirts", label: "Sweatshirts" },
-    { href: "/products?category=seasonal", label: "Seasonal" },
-]
+import { ApiClient } from "@/lib/api-client"
+import { Category as ApiCategory } from "@/types/category"
 
 export function Header() {
     const pathname = usePathname()
+    const [navLinks, setNavLinks] = useState<{ href: string; label: string }[]>([])
+
+    useEffect(() => {
+        async function fetchNavLinks() {
+            try {
+                const response = await ApiClient.getCategories();
+                if (response.success && response.categories) {
+                    // Filter or map categories to nav links
+                    const categories = response.categories.slice(0, 5).map((cat: ApiCategory) => ({
+                        href: `/products?category=${cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')}`,
+                        label: cat.name
+                    }));
+                    setNavLinks(categories);
+                }
+            } catch (err) {
+                console.error("Failed to fetch nav categories", err);
+            }
+        }
+        fetchNavLinks();
+    }, []);
+
     // Header is transparent only on homepage and product details
     const isTransparent = pathname === "/" || pathname.startsWith("/products/");
 
@@ -46,12 +63,12 @@ export function Header() {
                 <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
                     <div className="flex items-center gap-12">
                         <Logo isTransparent={isTransparent} />
-                        <DesktopNav pathname={pathname} isTransparent={isTransparent} />
+                        <DesktopNav pathname={pathname} isTransparent={isTransparent} navLinks={navLinks} />
                     </div>
-
+ 
                     <div className="flex items-center gap-2 md:gap-3">
                         <ActionButtons isTransparent={isTransparent} />
-                        <MobileNav pathname={pathname} isTransparent={isTransparent} />
+                        <MobileNav pathname={pathname} isTransparent={isTransparent} navLinks={navLinks} />
                     </div>
                 </div>
             </motion.header>
@@ -108,7 +125,7 @@ function Logo({ isTransparent }: { isTransparent: boolean }) {
     )
 }
 
-function DesktopNav({ pathname, isTransparent }: { pathname: string, isTransparent: boolean }) {
+function DesktopNav({ pathname, isTransparent, navLinks }: { pathname: string, isTransparent: boolean, navLinks: { href: string; label: string }[] }) {
     return (
         <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
@@ -216,7 +233,7 @@ function ActionButtons({ isTransparent }: { isTransparent: boolean }) {
     )
 }
 
-function MobileNav({ pathname, isTransparent }: { pathname: string, isTransparent: boolean }) {
+function MobileNav({ pathname, isTransparent, navLinks }: { pathname: string, isTransparent: boolean, navLinks: { href: string; label: string }[] }) {
     return (
         <Sheet>
             <SheetTrigger asChild>

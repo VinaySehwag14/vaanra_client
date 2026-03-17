@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async rewrites() {
+    return [
+      {
+        source: "/api-proxy/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+      },
+    ];
+  },
+
   async redirects() {
     return [
       // 🔴 Force non-www → www (THIS FIXES YOUR ISSUE)
