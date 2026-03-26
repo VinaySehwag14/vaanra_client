@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Loader2, CreditCard, Truck, MapPin, ShieldCheck, Lock } from "lucide-react";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/context/auth-context";
 import { ApiClient } from "@/lib/api-client";
 import Script from "next/script";
 import Image from "next/image";
@@ -22,7 +23,8 @@ declare global {
 
 export default function CheckoutPage() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, dbUser } = useAuth();
+    const { openAuthModal } = useAuthContext();
     const { cartItems, cartSummary, clearCart } = useCart();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,6 +41,18 @@ export default function CheckoutPage() {
         pincode: "",
         landmark: "",
     });
+
+    // Populate user data when dbUser is loaded
+    useEffect(() => {
+        if (dbUser) {
+            setFormData(prev => ({
+                ...prev,
+                fullName: dbUser.name || prev.fullName,
+                email: dbUser.email || prev.email,
+                phone: dbUser.phone_number || prev.phone,
+            }));
+        }
+    }, [dbUser]);
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -76,7 +90,7 @@ export default function CheckoutPage() {
 
     const handlePlaceOrder = async () => {
         if (!user) {
-            router.push("/login");
+            openAuthModal();
             return;
         }
 
