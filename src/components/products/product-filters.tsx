@@ -11,14 +11,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const categories = [
-    { id: "t-shirts", label: "T-Shirts" },
-    { id: "hoodies", label: "Hoodies" },
-    { id: "sweatshirts", label: "Sweatshirts" },
-    { id: "jackets", label: "Jackets" },
-    { id: "bottoms", label: "Bottoms" },
-    { id: "accessories", label: "Accessories" },
-];
+import { ApiClient } from "@/lib/api-client";
+import { Category as ApiCategory } from "@/types/category";
 
 const colors = [
     { id: "black", class: "bg-black", label: "Black" },
@@ -34,6 +28,27 @@ const colors = [
 const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
 export default function ProductFilters() {
+    const [categories, setCategories] = useState<{ id: string; label: string }[]>([]);
+
+    useEffect(() => {
+        async function fetchCategories() {
+            try {
+                const response = await ApiClient.getCategories();
+                if (response.success && response.categories) {
+                    setCategories(
+                        response.categories.map((cat: ApiCategory) => ({
+                            id: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
+                            label: cat.name
+                        }))
+                    );
+                }
+            } catch (err) {
+                console.error("Failed to fetch filters categories", err);
+            }
+        }
+        fetchCategories();
+    }, []);
+
     return (
         <>
             {/* Desktop Filters */}
@@ -45,7 +60,7 @@ export default function ProductFilters() {
                         </h2>
                         <div className="mt-2 h-1 w-12 rounded-full bg-gradient-to-r from-primary to-primary/50" />
                     </div>
-                    <FilterContent />
+                    <FilterContent categories={categories} />
                 </div>
             </div>
 
@@ -60,7 +75,7 @@ export default function ProductFilters() {
                     <SheetContent side="left" className="w-[300px] sm:w-[350px] border-white/20 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl">
                         <SheetTitle className="text-lg font-bold mb-6">Filters</SheetTitle>
                         <ScrollArea className="h-[calc(100vh-100px)] pr-4">
-                            <FilterContent />
+                            <FilterContent categories={categories} />
                         </ScrollArea>
                     </SheetContent>
                 </Sheet>
@@ -69,7 +84,7 @@ export default function ProductFilters() {
     );
 }
 
-function FilterContent() {
+function FilterContent({ categories }: { categories: { id: string; label: string }[] }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();

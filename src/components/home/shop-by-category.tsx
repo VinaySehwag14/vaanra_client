@@ -35,7 +35,7 @@ export default function ShopByCategory() {
                     name: cat.name,
                     image: cat.image_url || cat.image || "/gallery/vaanra-1.jpg",
                     imageAlt: `${cat.name} Category`,
-                    link: `/products?category=${cat.name.toLowerCase().replace(/\s+/g, '-')}`,
+                    link: `/products?category=${cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')}`,
                 }));
 
                 setCategories(mappedCategories);

@@ -1,46 +1,73 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Twitter, Youtube, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const footerLinks = [
-    {
-        title: "Shop",
-        links: [
-            { label: "New Arrivals", href: "/products?sort=new" },
-            { label: "Best Sellers", href: "/products?sort=best-selling" },
-            { label: "T-Shirts", href: "/products?category=t-shirts" },
-            { label: "Hoodies", href: "/products?category=hoodies" },
-            { label: "Accessories", href: "/products?category=accessories" },
-            { label: "Sale", href: "/products?category=sale" },
-        ],
-    },
-    {
-        title: "Support",
-        links: [
-            { label: "Help Center", href: "/help" },
-            { label: "Order Status", href: "/orders" },
-            { label: "Returns", href: "/returns" },
-            { label: "Size Guide", href: "/size-guide" },
-            { label: "Contact Us", href: "/contact" },
-            { label: "Shipping", href: "/shipping" },
-        ],
-    },
-    {
-        title: "Company",
-        links: [
-            { label: "About Vaanra", href: "/about" },
-            { label: "Sustainability", href: "/sustainability" },
-            { label: "Careers", href: "/careers" },
-            { label: "Terms", href: "/terms" },
-            { label: "Privacy", href: "/privacy" },
-            { label: "Press", href: "/press" },
-        ],
-    },
-];
+import { ApiClient } from "@/lib/api-client";
+import { Category as ApiCategory } from "@/types/category";
 
 export function Footer() {
+    const [shopLinks, setShopLinks] = useState<{ label: string; href: string }[]>([
+        { label: "New Arrivals", href: "/products?sort=new" },
+        { label: "Best Sellers", href: "/products?sort=best-selling" },
+    ]);
+
+    useEffect(() => {
+        async function fetchFooterCategories() {
+            try {
+                const response = await ApiClient.getCategories();
+                if (response.success && response.categories) {
+                    const dynamicLinks = response.categories.slice(0, 4).map((cat: ApiCategory) => ({
+                        label: cat.name,
+                        href: `/products?category=${cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')}`
+                    }));
+                    
+                    setShopLinks([
+                        { label: "New Arrivals", href: "/products?sort=new" },
+                        { label: "Best Sellers", href: "/products?sort=best-selling" },
+                        ...dynamicLinks,
+                        { label: "Sale", href: "/products?category=sale" },
+                    ]);
+                }
+            } catch (err) {
+                console.error("Failed to fetch footer categories", err);
+            }
+        }
+        fetchFooterCategories();
+    }, []);
+
+    const footerLinks = [
+        {
+            title: "Shop",
+            links: shopLinks,
+        },
+        {
+            title: "Support",
+            links: [
+                { label: "Help Center", href: "/help" },
+                { label: "Order Status", href: "/orders" },
+                { label: "Returns", href: "/returns" },
+                { label: "Size Guide", href: "/size-guide" },
+                { label: "Contact Us", href: "/contact" },
+                { label: "Shipping", href: "/shipping" },
+            ],
+        },
+        {
+            title: "Company",
+            links: [
+                { label: "About Vaanra", href: "/about" },
+                { label: "Sustainability", href: "/sustainability" },
+                { label: "Careers", href: "/careers" },
+                { label: "Terms", href: "/terms" },
+                { label: "Privacy", href: "/privacy" },
+                { label: "Press", href: "/press" },
+            ],
+        },
+    ];
+
     return (
         <footer className="w-full bg-black relative overflow-hidden pt-16 pb-8 border-t border-white/5">
             {/* Ambient Background Glows */}
@@ -97,10 +124,10 @@ export function Footer() {
                         </div>
 
                         <div className="flex gap-3">
-                            <SocialLink href="#" icon={<Instagram className="w-4 h-4" />} label="Instagram" />
-                            <SocialLink href="#" icon={<Twitter className="w-4 h-4" />} label="Twitter" />
-                            <SocialLink href="#" icon={<Facebook className="w-4 h-4" />} label="Facebook" />
-                            <SocialLink href="#" icon={<Youtube className="w-4 h-4" />} label="YouTube" />
+                            <SocialLink href="https://instagram.com/vaanra_store" icon={<Instagram className="w-4 h-4" />} label="Instagram" />
+                            <SocialLink href="https://twitter.com/vaanra_store" icon={<Twitter className="w-4 h-4" />} label="Twitter" />
+                            <SocialLink href="https://facebook.com/vaanra" icon={<Facebook className="w-4 h-4" />} label="Facebook" />
+                            <SocialLink href="https://youtube.com/@vaanra" icon={<Youtube className="w-4 h-4" />} label="YouTube" />
                         </div>
                     </div>
 

@@ -1,7 +1,8 @@
 import { User } from "firebase/auth";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+const IS_DEV = process.env.NODE_ENV === "development";
+const IS_CLIENT = typeof window !== "undefined";
+const API_URL = IS_DEV && IS_CLIENT ? "/api-proxy" : process.env.NEXT_PUBLIC_API_URL;
 
 export class ApiClient {
     private static async getAuthHeaders(user: User | null) {
@@ -46,23 +47,26 @@ export class ApiClient {
     }
 
     /**
-     * Verify user exists in database and sync their data
+     * Verify user with backend and automatically create an account if they don't exist
      * @param user Firebase user object
      * @returns Promise<any> - User data from backend
-     * @throws Error if user doesn't exist in database
      */
-    static async verifyAndSyncUser(user: User) {
+    static async verifyOrCreate(user: User) {
         try {
-            const userExists = await this.checkUserExists(user);
+            const headers = await this.getAuthHeaders(user);
+            const response = await fetch(`${API_URL}/api/v1/auth/verify-or-create`, {
+                method: "POST",
+                headers,
+            });
 
-            if (!userExists) {
-                throw new Error("USER_NOT_FOUND");
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to verify or create user: ${response.statusText}`);
             }
 
-            // User exists, proceed with sync
-            return await this.syncUser(user);
+            return await response.json();
         } catch (error) {
-            console.error("Error verifying and syncing user:", error);
+            console.error("Error verifying or creating user:", error);
             throw error;
         }
     }

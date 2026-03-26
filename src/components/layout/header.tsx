@@ -11,18 +11,36 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
+import { useAuthContext } from "@/context/auth-context"
 import { useCart } from "@/context/cart-context"
 import { cn } from "@/lib/utils"
 
-const navLinks = [
-    { href: "/products?category=t-shirts", label: "T-Shirts" },
-    { href: "/products?category=hoodies", label: "Hoodies" },
-    { href: "/products?category=sweatshirts", label: "Sweatshirts" },
-    { href: "/products?category=seasonal", label: "Seasonal" },
-]
+import { ApiClient } from "@/lib/api-client"
+import { Category as ApiCategory } from "@/types/category"
 
 export function Header() {
     const pathname = usePathname()
+    const [navLinks, setNavLinks] = useState<{ href: string; label: string }[]>([])
+
+    useEffect(() => {
+        async function fetchNavLinks() {
+            try {
+                const response = await ApiClient.getCategories();
+                if (response.success && response.categories) {
+                    // Filter or map categories to nav links
+                    const categories = response.categories.slice(0, 5).map((cat: ApiCategory) => ({
+                        href: `/products?category=${cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')}`,
+                        label: cat.name
+                    }));
+                    setNavLinks(categories);
+                }
+            } catch (err) {
+                console.error("Failed to fetch nav categories", err);
+            }
+        }
+        fetchNavLinks();
+    }, []);
+
     // Header is transparent only on homepage and product details
     const isTransparent = pathname === "/" || pathname.startsWith("/products/");
 
@@ -46,12 +64,12 @@ export function Header() {
                 <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
                     <div className="flex items-center gap-12">
                         <Logo isTransparent={isTransparent} />
-                        <DesktopNav pathname={pathname} isTransparent={isTransparent} />
+                        <DesktopNav pathname={pathname} isTransparent={isTransparent} navLinks={navLinks} />
                     </div>
-
+ 
                     <div className="flex items-center gap-2 md:gap-3">
                         <ActionButtons isTransparent={isTransparent} />
-                        <MobileNav pathname={pathname} isTransparent={isTransparent} />
+                        <MobileNav pathname={pathname} isTransparent={isTransparent} navLinks={navLinks} />
                     </div>
                 </div>
             </motion.header>
@@ -108,7 +126,7 @@ function Logo({ isTransparent }: { isTransparent: boolean }) {
     )
 }
 
-function DesktopNav({ pathname, isTransparent }: { pathname: string, isTransparent: boolean }) {
+function DesktopNav({ pathname, isTransparent, navLinks }: { pathname: string, isTransparent: boolean, navLinks: { href: string; label: string }[] }) {
     return (
         <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
@@ -145,6 +163,7 @@ function DesktopNav({ pathname, isTransparent }: { pathname: string, isTranspare
 function ActionButtons({ isTransparent }: { isTransparent: boolean }) {
     const { user } = useAuth();
     const { cartCount } = useCart();
+    const { openAuthModal } = useAuthContext();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -197,26 +216,33 @@ function ActionButtons({ isTransparent }: { isTransparent: boolean }) {
             </Link>
 
             {mounted && user ? (
-                <Link href="/profile" className="hidden md:block ml-2">
-                    <Avatar className="h-9 w-9 ring-2 ring-primary/10 transition-transform hover:scale-105 active:scale-95">
-                        <AvatarImage src={user?.photoURL || "/avatars/01.png"} alt={displayName} />
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                            {initials}
-                        </AvatarFallback>
-                    </Avatar>
-                </Link>
+                <div className="hidden md:flex items-center gap-2 ml-2">
+                    <Link href="/profile">
+                        <Avatar className="h-9 w-9 ring-2 ring-primary/10 transition-transform hover:scale-105 active:scale-95">
+                            <AvatarImage src={user?.photoURL || "/avatars/01.png"} alt={displayName} />
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                                {initials}
+                            </AvatarFallback>
+                        </Avatar>
+                    </Link>
+                </div>
             ) : mounted && (
-                <Link href="/login" className="hidden md:block ml-2">
-                    <Button variant="default" size="sm" className="bg-gradient-primary rounded-full px-5 hover:opacity-90 transition-opacity">
+                <div className="hidden md:block ml-2">
+                    <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="bg-gradient-primary rounded-full px-5 hover:opacity-90 transition-opacity"
+                        onClick={openAuthModal}
+                    >
                         Login
                     </Button>
-                </Link>
+                </div>
             )}
         </>
     )
 }
 
-function MobileNav({ pathname, isTransparent }: { pathname: string, isTransparent: boolean }) {
+function MobileNav({ pathname, isTransparent, navLinks }: { pathname: string, isTransparent: boolean, navLinks: { href: string; label: string }[] }) {
     return (
         <Sheet>
             <SheetTrigger asChild>
@@ -274,6 +300,7 @@ function MobileNav({ pathname, isTransparent }: { pathname: string, isTransparen
 function MobileBottomNav({ pathname }: { pathname: string }) {
     const { user } = useAuth();
     const { cartCount } = useCart();
+    const { openAuthModal } = useAuthContext();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -307,7 +334,8 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
                     />
 
                     <BottomNavLink
-                        href={user ? "/profile" : "/login"}
+                        href={user ? "/profile" : undefined}
+                        onClick={!user ? openAuthModal : undefined}
                         icon={mounted && user ? (
                             <Avatar className="h-6 w-6">
                                 <AvatarImage src={user?.photoURL || "/avatars/01.png"} />
@@ -325,10 +353,34 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
     )
 }
 
-function BottomNavLink({ href, icon, label, active, badge }: { href: string, icon: React.ReactNode, label: string, active: boolean, badge?: number }) {
+function BottomNavLink({ href, icon, label, active, badge, onClick }: { href?: string, icon: React.ReactNode, label: string, active: boolean, badge?: number, onClick?: () => void }) {
+    if (onClick && !href) {
+        return (
+            <button
+                onClick={onClick}
+                className={cn(
+                    "flex flex-col items-center gap-1 px-4 py-2 transition-all duration-300 relative group w-full",
+                    active ? "scale-110" : "scale-100 opacity-70 hover:opacity-100"
+                )}
+            >
+                <div className={cn("relative", active && "text-primary")}>
+                    {icon}
+                    {badge !== undefined && badge > 0 && (
+                        <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                            {badge > 99 ? "99+" : badge}
+                        </span>
+                    )}
+                </div>
+                <span className={cn("text-[10px] font-medium transition-colors", active ? "text-primary font-bold" : "text-muted-foreground")}>
+                    {label}
+                </span>
+            </button>
+        )
+    }
+
     return (
         <Link
-            href={href}
+            href={href || "#"}
             className={cn(
                 "flex flex-col items-center gap-1 px-4 py-2 transition-all duration-300 relative group",
                 active ? "scale-110" : "scale-100 opacity-70 hover:opacity-100"

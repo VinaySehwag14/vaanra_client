@@ -8,6 +8,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   updateProfile,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
 } from "firebase/auth";
 import { auth } from "./firebaseClient";
 
@@ -29,6 +32,31 @@ export function signUpWithEmail(email: string, password: string) {
  */
 export function signInWithEmail(email: string, password: string) {
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+/**
+ * Send Magic Link to Email
+ */
+export function sendMagicLink(email: string, redirectUrl: string) {
+  const actionCodeSettings = {
+    url: redirectUrl,
+    handleCodeInApp: true,
+  };
+  return sendSignInLinkToEmail(auth, email, actionCodeSettings);
+}
+
+/**
+ * Verify Magic Link Check
+ */
+export function isMagicLink(link: string) {
+  return isSignInWithEmailLink(auth, link);
+}
+
+/**
+ * Sign in with Magic Link
+ */
+export function signInWithMagicLink(email: string, link: string) {
+  return signInWithEmailLink(auth, email, link);
 }
 
 /**
